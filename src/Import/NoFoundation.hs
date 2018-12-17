@@ -3,7 +3,7 @@ module Import.NoFoundation
     ( module Import
     ) where
 
-import ClassyPrelude.Yesod   as Import
+import ClassyPrelude.Yesod   as Import hiding (PageContent (..))
 import Settings              as Import
 import Settings.StaticFiles  as Import
 import Yesod.Core.Types      as Import (loggerSet)

@@ -1,50 +1,64 @@
+$doctype 5
+<html lang=en>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    $maybe description <- pageDescription
+      <meta name="description" content=#{description}>
+    $maybe author <- pageAuthor
+      <meta name="author" content=#{author}>
 
-<!-- Static navbar -->
-<nav .navbar.navbar-default.navbar-static-top>
-    <div .container>
-        <div .navbar-header>
-            <button type="button" .navbar-toggle.collapsed data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
+    <title>#{pageTitle}
 
-        <div #navbar .collapse.navbar-collapse>
-            <ul .nav.navbar-nav>
-                $forall MenuItem label route _ <- navbarLeftFilteredMenuItems
-                    <li :Just route == mcurrentRoute:.active>
-                        <a href="@{route}">#{label}
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-            <ul .nav.navbar-nav.navbar-right>
-                $forall MenuItem label route _ <- navbarRightFilteredMenuItems
-                    <li :Just route == mcurrentRoute:.active>
-                        <a href="@{route}">#{label}
+    <!-- Custom styles for this template -->
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
 
-<!-- Page Contents -->
+    #{pageHead}
 
-<div .container>
-    $if not $ Just HomeR == mcurrentRoute
-        <ul .breadcrumb>
-            $forall bc <- parents
+  <body>
+
+    <div class="container-fluid fp-nav">
+      <div class="container">
+        <div class="row">
+          <div class="col col-4">
+            <a href="/" class="fp-logo-link">
+              <img #toplogo src="/static/img/logo.png">
+
+          <div class="col-8">
+            <nav class="fp-nav-items">
+              <a class="p-2 text-light" href="/solutions">Solutions</a>
+              <a class="p-2 text-light" href="/consulting">Consulting</a>
+              <a class="p-2 text-light" href="/training">Training</a>
+              <a class="p-2 text-light" href="/haskell">Haskell</a>
+              <a class="p-2 text-light" href="/rust">Rust</a>
+              <a class="p-2 text-light" href="/devops">DevOps</a>
+
+    <div class="container-fluid fp-body-fluid">
+      <div class="container fp-body-container">
+        <div class="row">
+          <div class="col-md-12">
+            $if not pageSkipH1
+              <h1 id="page-title">#{pageTitle}
+            #{pageBody}
+
+    <div class="container-fluid fp-footer">
+      <div class="container">
+        <footer class="pt-4 my-md-5 pt-md-5">
+          <div class="row">
+            <div class="col-12 col-md">
+              <img #footerlogo src="/static/img/logo.png">
+              <small class="d-block mb-3 text-muted">&copy; 2018
+            <div class="col-6 col-md">
+              <h5>Technology
+              <ul class="list-unstyled text-small">
                 <li>
-                    <a href="@{fst bc}">#{snd bc}
-
-            <li .active>#{title}
-
-    $maybe msg <- mmsg
-      <div .alert.alert-info #message>#{msg}
-
-
-$if (Just HomeR == mcurrentRoute)
-    ^{widget}
-$else
-    <div .container>
-        <div .row>
-            <div .col-md-12>
-                ^{widget}
-
-<!-- Footer -->
-<footer .footer>
-    <div .container>
-        <p .text-muted>
-            #{appCopyright $ appSettings master}
+                  <a class="" href="/haskell">Haskell
+                <li>
+                  <a class="" href="/rust">Rust
+                <li>
+                  <a class="" href="/devops">DevOps
+                <li>
+                  <a class="" href="/blockchain">Blockchain
