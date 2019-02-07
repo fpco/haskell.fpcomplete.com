@@ -1,4 +1,4 @@
-name:    ch
+name:    hfp
 version: "0.0.0"
 
 dependencies:
@@ -64,7 +64,7 @@ library:
 
 # Runnable executable for our application
 executables:
-  ch:
+  hfp:
     main: main.hs
     source-dirs: app
     ghc-options:
@@ -72,21 +72,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - ch
+    - hfp
     when:
     - condition: flag(library-only)
       buildable: false
-
-# Test suite
-tests:
-  ch-test:
-    main: Spec.hs
-    source-dirs: test
-    ghc-options: -Wall
-    dependencies:
-    - ch
-    - hspec >=2.0.0
-    - yesod-test
 
 # Define flags used by "yesod devel" to make compilation faster
 flags:

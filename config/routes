@@ -8,4 +8,7 @@
 
 / HomeR GET
 /contribute ContributeR GET
-
+/learn LearnR GET
+/promote PromoteR GET
+/success SuccessR GET
+/community CommunityR GET

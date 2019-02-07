@@ -1,43 +1,70 @@
-## Haskell Setup
+# FP Complete's Haskell Homepage
 
-1. If you haven't already, [install Stack](https://haskell-lang.org/get-started)
-	* On POSIX systems, this is usually `curl -sSL https://get.haskellstack.org/ | sh`
-2. Install the `yesod` command line tool: `stack install yesod-bin --install-ghc`
-3. Build libraries: `stack build`
+**TODO**
 
-If you have trouble, refer to the [Yesod Quickstart guide](https://www.yesodweb.com/page/quickstart) for additional detail.
+* Fix logo at top
+* Review color scheme
+* Decide: do we want a blog here, or just use fpcomplete.com?
+* Add appropriate license, import content from other repos with licensing worked out
+* Automatically set copyright date in footer
+* Fix top and bottom navbars
+* Address all FIXMEs in codebase
+* Import content from fpcomplete.com, at least haskell-syllabus and some linked pages
+* Add a sitemap
+* Incude "Edit on Github" links on pages
 
-## Development
+This repository contains the code and content for [FP Complete's
+Haskell Homepage](https://haskell.fpcomplete.com/). Unless otherwise
+marked, content is copyright FP Complete under the [Creative Commons
+Attribution ShareAlike 4.0
+International](http://creativecommons.org/licenses/by-sa/4.0/)
+license.
 
-Start a development server with:
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
-```
-stack exec -- yesod devel
-```
+## Purpose
 
-As your code changes, your site will be automatically recompiled and redeployed to localhost.
+FP Complete was founded on a vision of functional programming in
+general, and Haskell in particular, being a Good Thing. We continue
+with this mission today, and seek to __Promote the commercial adoption
+of Haskell__. This website is intended to consolidate our efforts on
+the documentation and outreach front.
 
-## Tests
+As such, this site intends to contain:
 
-```
-stack test --flag ch:library-only --flag ch:dev
-```
+* Library documentation
+* Our recommended best practices
+* Opinionated guides on how to use Haskell
+* Advice for promoting Haskell at your company
+* Explanation of our service offerings that can help with that
+* Links to additional community resources
 
-(Because `yesod devel` passes the `library-only` and `dev` flags, matching those flags means you don't need to recompile between tests and development, and it disables optimization to speed up your test compile times).
+## Contributions
 
-## Documentation
+We welcome contributions to this site from the wider community!
+Wherever possible we include "Edit on Github" links on our pages, and
+try to stick to Markdown for input formats for ease of use. Note that:
 
-* Read the [Yesod Book](https://www.yesodweb.com/book) online for free
-* Check [Stackage](http://stackage.org/) for documentation on the packages in your LTS Haskell version, or [search it using Hoogle](https://www.stackage.org/lts/hoogle?q=). Tip: Your LTS version is in your `stack.yaml` file.
-* For local documentation, use:
-	* `stack haddock --open` to generate Haddock documentation for your dependencies, and open that documentation in a browser
-	* `stack hoogle <function, module or type signature>` to generate a Hoogle database and search for your query
-* The [Yesod cookbook](https://github.com/yesodweb/yesod-cookbook) has sample code for various needs
+* Unless otherwise noted, content is owned by FP Completed and
+  licensed as described above.
+* By submitting a pull request, you affirm that you have ownership of
+  the material and agree to assign copyright to FP Complete.
 
-## Getting Help
+We welcome others to share content on this site that they feel useful
+with others, either via links to the content or directly. If you
+include raw content from this site elsewhere, please include a link
+back to the original, as we will update our recommendations over time
+to meet current versions of tools and libraries and evolving best
+practices.
 
-* Ask questions on [Stack Overflow, using the Yesod or Haskell tags](https://stackoverflow.com/questions/tagged/yesod+haskell)
-* Ask the [Yesod Google Group](https://groups.google.com/forum/#!forum/yesodweb)
-* There are several chatrooms you can ask for help:
-	* For IRC, try Freenode#yesod and Freenode#haskell
-	* [Functional Programming Slack](https://fpchat-invite.herokuapp.com/), in the #haskell, #haskell-beginners, or #yesod channels.
+## History
+
+This website replaces some previous false starts (and mistakes) at trying to create an opinionated hub of Haskell information. Previously, some FP Complete members participated in haskell-lang.org as another vision of an opinionated Haskell site. Later, we sought out collaborators for creating a more complete Commercial Haskell website.
+
+haskell-lang.org was a mistake, and there was insufficient interest in
+commercialhaskell.com. As such, we decided to focus efforts on a site
+under our own branding and control.
+
+This site is unapologetically opinionated, and follows what we have
+found to be the best route towards getting productive with Haskell
+quickly.

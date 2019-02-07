@@ -1,5 +1,5 @@
 {-# LANGUAGE PackageImports #-}
-import "ch" Application (develMain)
+import "hfp" Application (develMain)
 import Prelude (IO)
 
 main :: IO ()

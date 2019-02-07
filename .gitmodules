@@ -1,0 +1,3 @@
+[submodule "vendor/haskell-lang"]
+	path = vendor/haskell-lang
+	url = https://github.com/haskell-lang/haskell-lang
