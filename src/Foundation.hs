@@ -53,4 +53,10 @@ data Page = Page
   }
 
 displayPage :: Page -> Handler Html
-displayPage Page {..} = withUrlRenderer $(hamletFile "templates/default-layout.hamlet")
+displayPage Page {..} = do
+  (fromInteger -> year, _, _) <- (toGregorian . utctDay) <$> liftIO getCurrentTime
+  let firstYear = 2019 :: Int
+      copyrightYears
+        | year == firstYear = toHtml year
+        | otherwise = toHtml firstYear <> "—" <> toHtml year
+  withUrlRenderer $(hamletFile "templates/default-layout.hamlet")

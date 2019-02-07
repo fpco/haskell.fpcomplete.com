@@ -9,9 +9,6 @@ getHomeR = displayMarkdown "home"
 getContributeR :: Handler Html
 getContributeR = displayMarkdown "contribute"
 
-getLearnR :: Handler Html
-getLearnR = displayMarkdown "learn"
-
 getPromoteR :: Handler Html
 getPromoteR = displayMarkdown "promote"
 
@@ -20,3 +17,6 @@ getSuccessR = displayMarkdown "success"
 
 getCommunityR :: Handler Html
 getCommunityR = displayMarkdown "community"
+
+getAboutR :: Handler Html
+getAboutR = displayMarkdown "about"

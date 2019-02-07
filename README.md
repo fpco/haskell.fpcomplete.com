@@ -2,16 +2,16 @@
 
 **TODO**
 
-* Fix logo at top
 * Review color scheme
 * Decide: do we want a blog here, or just use fpcomplete.com?
 * Add appropriate license, import content from other repos with licensing worked out
-* Automatically set copyright date in footer
 * Fix top and bottom navbars
-* Address all FIXMEs in codebase
+* Address all FIXMEs and undefineds in codebase
 * Import content from fpcomplete.com, at least haskell-syllabus and some linked pages
 * Add a sitemap
-* Incude "Edit on Github" links on pages
+* Include "Edit on Github" links on pages
+* Add automatic 404 checking
+* Add a /build-version
 
 This repository contains the code and content for [FP Complete's
 Haskell Homepage](https://haskell.fpcomplete.com/). Unless otherwise

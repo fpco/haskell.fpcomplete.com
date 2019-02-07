@@ -205,9 +205,12 @@ a:hover {
 }
 
 #toplogo {
-    height: 40px;
+    width: 250px;
+    padding-top: 40px;
 }
 
 #footerlogo {
     height: 1em;
 }
+
+#logo-ring { fill: #8f4e8b !important; }

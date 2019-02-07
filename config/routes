@@ -8,7 +8,16 @@
 
 / HomeR GET
 /contribute ContributeR GET
-/learn LearnR GET
 /promote PromoteR GET
 /success SuccessR GET
 /community CommunityR GET
+/about AboutR GET
+
+/learn LearnR GET -- index of everything: libraries, tutorials, etc
+/library/#Text LibraryR GET
+/tutorial/#Text TutorialR GET
+
+/get-started GetStartedR GET
+/get-started/osx GetStartedOSXR GET
+/get-started/windows GetStartedWindowsR GET
+/get-started/linux GetStartedLinuxR GET
