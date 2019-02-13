@@ -12,6 +12,7 @@
 /success SuccessR GET
 /community CommunityR GET
 /about AboutR GET
+/philosophy PhilosophyR GET
 
 /learn LearnR GET -- index of everything: libraries, tutorials, etc
 /library/#Text LibraryR GET

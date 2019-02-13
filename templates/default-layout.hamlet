@@ -64,6 +64,8 @@ $doctype 5
                 <li>
                   <a href=@{AboutR}>About
                 <li>
+                  <a href=@{PhilosophyR}>Philosophy
+                <li>
                   <a href="https://www.fpcomplete.com/contact-us">Contact Us
             <div class="col-4 col-md">
               <h5>Learn Haskell
@@ -84,3 +86,11 @@ $doctype 5
                   <a href=@{PromoteR}>Promote Haskell
                 <li>
                   <a href=@{CommunityR}>Community
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-36928035-5"> -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-36928035-5');

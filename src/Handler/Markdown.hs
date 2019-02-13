@@ -20,3 +20,6 @@ getCommunityR = displayMarkdown "community"
 
 getAboutR :: Handler Html
 getAboutR = displayMarkdown "about"
+
+getPhilosophyR :: Handler Html
+getPhilosophyR = displayMarkdown "philosophy"
