@@ -48,6 +48,7 @@ dependencies:
 - html-conduit
 - xml-conduit
 - yesod-gitrev
+- yesod-sitemap
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.

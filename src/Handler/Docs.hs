@@ -10,9 +10,6 @@ module Handler.Docs
 import Import
 import qualified Data.Map.Strict as Map
 
-getDocs :: Handler Docs
-getDocs = getYesod >>= liftIO . appDocs
-
 getLearnR :: Handler Html
 getLearnR = do
   let title = "Learn Haskell"

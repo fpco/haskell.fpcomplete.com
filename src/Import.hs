@@ -44,3 +44,6 @@ displayMarkdown base = do
     , extAutolink
     ]
     bodyText
+
+getDocs :: Handler Docs
+getDocs = getYesod >>= liftIO . appDocs
