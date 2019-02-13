@@ -44,6 +44,7 @@ instance Yesod App where
               , pageHead = Y.pageHead pc render
               , pageBody = Y.pageBody pc render
               , pageSkipH1 = True
+              , pageEditLink = Nothing
               }
 
 data Page = Page
@@ -53,6 +54,7 @@ data Page = Page
   , pageHead :: !Html
   , pageBody :: !Html
   , pageSkipH1 :: !Bool
+  , pageEditLink :: !(Maybe Text)
   }
 
 displayPage :: Page -> Handler Html

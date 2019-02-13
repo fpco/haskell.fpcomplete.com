@@ -13,7 +13,7 @@ curated for projects which actively encourage newcomer contributions,
 and should be well set up for mentoring people still learning the
 language.
 
-<small>If you'd like to have your project included in this list, please [send a pull request](FIXME).</small>
+<small>If you'd like to have your project included in this list, please click the edit link above and send a PR to this page.</small>
 
 Typically, if you're interested in contributing to a project, find an
 issue on its issue tracker and drop a comment asking if it would be a

@@ -40,6 +40,9 @@ $doctype 5
       <div class="container fp-body-container">
         <div class="row">
           <div class="col-lg-12">
+            $maybe editLink <- pageEditLink
+              <p>
+                <a href=#{editLink}>Edit this page
             $if not pageSkipH1
               <h1 id="page-title">#{pageTitle}
             #{pageBody}

@@ -1,3 +1,3 @@
 # Haskell Best Practices
 
-FIXME!
+This page hasn't been written yet, sorry! We're working on it. <!-- FIXME -->

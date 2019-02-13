@@ -14,7 +14,7 @@ import Text.Blaze.Html (preEscapedToHtml)
 import CMarkGFM
 import Data.Text.Encoding (decodeUtf8')
 
-newtype MakePage = MakePage (Html -> Page)
+newtype MakePage = MakePage (FilePath -> Html -> Page)
 
 instance FromJSON MakePage where
   parseJSON = withObject "MakePage" $ \o -> do
@@ -23,7 +23,13 @@ instance FromJSON MakePage where
     pageAuthor <- o .:? "author"
     pageHead <- (fmap (preEscapedToHtml :: Text -> Html) <$> (o .:? "head")) .!= ""
     pageSkipH1 <- o .:? "skip-h1" .!= False
-    pure $ MakePage $ \pageBody -> Page {..}
+    pure $ MakePage $ \base pageBody ->
+      let pageEditLink = Just $ mconcat
+            [ "https://github.com/fpco/haskell.fpcomplete.com/blob/master/pages/"
+            , fromString base
+            , ".md"
+            ]
+       in Page {..}
 
 displayMarkdown :: FilePath -> Handler Html
 displayMarkdown base = do
@@ -35,7 +41,7 @@ displayMarkdown base = do
     Just (B8.unlines fm, B8.unlines body)
   MakePage makePage <- decodeThrow frontmatterBS
   bodyText <- either throwIO pure $ decodeUtf8' bodyBS
-  displayPage $ makePage $ preEscapedToHtml $ commonmarkToHtml
+  displayPage $ makePage base $ preEscapedToHtml $ commonmarkToHtml
     [ optSmart
     , optUnsafe
     ]

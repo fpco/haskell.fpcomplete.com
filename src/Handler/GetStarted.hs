@@ -17,7 +17,6 @@ getGetStartedOSR = getStarted . Just
 getStarted :: Maybe OS -> Handler Html
 getStarted mos = defaultLayout $ do
   setTitle "Get Started with Haskell"
-  -- FIXME getting a line through the icons on hover
   toWidget
     [lucius|
 .os-logos {
@@ -26,6 +25,7 @@ getStarted mos = defaultLayout $ do
 
 a.os-logo, a.os-logo:hover {
   margin-right: 2em;
+  border: 0;
 }
 
 .os-faded img {
