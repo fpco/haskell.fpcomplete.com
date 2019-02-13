@@ -10,7 +10,7 @@ This page is targeted at developers looking to get their teams or
 companies to consider adopting Haskell.
 
 At FP Complete, we like to use the **attractors** and **obstacles**
-approach, analyzing the draw ofHaskell versus concerns.
+approach, contrasting the draw of Haskell with concerns surrounding deploying Haskell.
 
 <div class="row">
 
