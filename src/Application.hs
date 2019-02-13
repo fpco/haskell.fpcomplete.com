@@ -56,7 +56,7 @@ makeFoundation appSettings = do
     appStatic <-
         (if appMutableStatic appSettings then staticDevel else static)
         (appStaticDir appSettings)
-    appDocs <- getDocLoader
+    appDocs <- getDocLoader $ appReloadDocs appSettings
     let appGitRev = $$tGitRev
 
     -- Return the foundation

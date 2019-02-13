@@ -53,11 +53,14 @@ $doctype 5
           <div class="row">
             <div class="col-12 col-md">
               <img #footerlogo src=@{StaticR img_logo_png}>
-              FP Complete's Haskell Hub
-              <small class="d-block mb-3 text-muted">&copy; #{copyrightYears}
+              <small class="d-block mb-3 text-muted">
+                FP Complete's Haskell Hub<br>
+                &copy; #{copyrightYears} FP Complete Corp.
             <div class="col-4 col-md">
               <h5>FP Complete
               <ul class="list-unstyled text-small">
+                <li>
+                  <a href=https://www.fpcomplete.com>Corporate Homepage
                 <li>
                   <a href=@{AboutR}>About
                 <li>

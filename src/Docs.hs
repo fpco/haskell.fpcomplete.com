@@ -36,18 +36,24 @@ data Doc = Doc
 
 data Source = HaskellLang | Local
 
-loadDocs :: IO Docs
-loadDocs = runConduitRes $ (<>)
+loadDocs
+  :: Bool -- ^ dev mode
+  -> IO Docs
+loadDocs devMode = runConduitRes $ (<>)
   <$>  ( sourceDirectoryDeep True "tutorials"
-      .| foldMapMC (liftIO . toDocs Local))
+      .| foldMapMC (liftIO . toDocs devMode Local))
   <*>  ( sourceDirectoryDeep True "vendor/haskell-lang/static/tutorial"
-      .| foldMapMC (liftIO . toDocs HaskellLang))
+      .| foldMapMC (liftIO . toDocs devMode HaskellLang))
 
-toDocs :: Source -> FilePath -> IO Docs
-toDocs src fp =
+toDocs
+  :: Bool -- ^ dev mode
+  -> Source -> FilePath -> IO Docs
+toDocs devMode src fp =
   case splitExtension $ takeFileName fp of
     (name, ".md") -> byName name <$> getMarkdownDoc src fp
-    (name, ".url") -> byName name <$> getUrlDoc fp
+    (name, ".url")
+      | devMode -> pure mempty
+      | otherwise -> byName name <$> getUrlDoc fp
     _ -> pure mempty
   where
     byName (fromString -> name) doc =
@@ -103,9 +109,12 @@ getUrlDoc fp = do
         }
     _ -> error $ "Malformed file: " ++ show fp
 
-getDocLoader :: IO (IO Docs)
-getDocLoader = do
-  docs0 <- loadDocs
+getDocLoader
+  :: Bool -- ^ dev mode: reload, and no URLs
+  -> IO (IO Docs)
+getDocLoader True = pure $ loadDocs True
+getDocLoader False = do
+  docs0 <- loadDocs False
   ref0 <- newIORef docs0
   weak <- mkWeakIORef ref0 (pure ())
   void $ async $ fix $ \loop -> do
@@ -114,7 +123,7 @@ getDocLoader = do
     case mref of
       Nothing -> pure ()
       Just ref -> do
-        edocs <- tryAny loadDocs
+        edocs <- tryAny $ loadDocs False
         case edocs of
           Left e -> print e -- FIXME proper logging
           Right docs -> writeIORef ref docs

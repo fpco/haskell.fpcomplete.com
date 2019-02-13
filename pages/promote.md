@@ -2,6 +2,41 @@
 title: Promote Haskell
 ---
 
+<!-- FIXME -->
+
+<p class="lead">Help your team adopt Haskell</p>
+
+This page is targeted at developers looking to get their teams or
+companies to consider adopting Haskell.
+
+At FP Complete, we like to use the **attractors** and **obstacles**
+approach, analyzing the draw ofHaskell versus concerns.
+
+<div class="row">
+
+<div class="col-lg-6">
+
+## Attractors
+
+* Performance
+* Productivity
+* Robustness
+
+</div>
+
+<div class="col-lg-6">
+
+## Obstacles
+
+* Commercial support
+* Ability to hire
+* Learning curve
+* Not pragmatic
+
+</div>
+
+</div>
+
 FIXME need a lot more content!
 
 * Boring Haskell manifesto https://docs.google.com/document/d/1nqpx0wSgmdhIO-aWffc3MGR45w4MNOyW8Zbo0eGILII/edit

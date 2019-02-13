@@ -42,6 +42,8 @@ data AppSettings = AppSettings
     -- ^ Use the reload version of templates
     , appMutableStatic          :: Bool
     -- ^ Assume that files in the static dir may change after compilation
+    , appReloadDocs             :: Bool
+    -- ^ Reload docs on each refresh
     }
 
 instance FromJSON AppSettings where
@@ -62,6 +64,7 @@ instance FromJSON AppSettings where
         appDetailedRequestLogging <- o .:? "detailed-logging" .!= dev
         appReloadTemplates        <- o .:? "reload-templates" .!= dev
         appMutableStatic          <- o .:? "mutable-static"   .!= dev
+        appReloadDocs             <- o .:? "reload-docs"      .!= dev
 
         return AppSettings {..}
 
