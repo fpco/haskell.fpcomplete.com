@@ -2,7 +2,6 @@
 
 **TODO**
 
-* Fix top and bottom navbars
 * Address all FIXMEs and undefineds in codebase
 * Add automatic 404 checking
 * Redirect pages from fpcomplete.com to haskell.fpcomplete.com: /haskell, /haskell-syllabus
