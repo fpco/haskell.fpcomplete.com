@@ -1,0 +1,3 @@
+# Haskell learning syllabus
+
+FIXME!

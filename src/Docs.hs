@@ -7,7 +7,7 @@ module Docs
   , getDocLoader
   ) where
 
-import ClassyPrelude.Yesod
+import ClassyPrelude.Yesod hiding (Source)
 import System.FilePath
 import CMarkGFM
 import Text.Blaze.Html (preEscapedToHtml)
@@ -16,6 +16,8 @@ import Network.HTTP.Simple
 import System.Mem.Weak (deRefWeak)
 import Control.Concurrent (threadDelay)
 import Data.Function (fix)
+import Text.HTML.DOM (parseSTChunks)
+import Text.XML.Cursor (fromDocument, ($//), element, content, (&/))
 
 data Docs = Docs
   { docsLibraries :: !(Map Text Doc)
@@ -32,40 +34,56 @@ data Doc = Doc
   , docEditLink :: !(Maybe Text)
   }
 
-loadDocs :: IO Docs
-loadDocs = runConduitRes
-         $ sourceDirectoryDeep True "vendor/haskell-lang/static/tutorial"
-        .| foldMapMC (liftIO . toDocs)
+data Source = HaskellLang | Local
 
-toDocs :: FilePath -> IO Docs
-toDocs fp =
+loadDocs :: IO Docs
+loadDocs = runConduitRes $ (<>)
+  <$>  ( sourceDirectoryDeep True "tutorials"
+      .| foldMapMC (liftIO . toDocs Local))
+  <*>  ( sourceDirectoryDeep True "vendor/haskell-lang/static/tutorial"
+      .| foldMapMC (liftIO . toDocs HaskellLang))
+
+toDocs :: Source -> FilePath -> IO Docs
+toDocs src fp =
   case splitExtension $ takeFileName fp of
-    (name, ".md") -> byName name <$> getMarkdownDoc fp
+    (name, ".md") -> byName name <$> getMarkdownDoc src fp
     (name, ".url") -> byName name <$> getUrlDoc fp
     _ -> pure mempty
   where
     byName (fromString -> name) doc =
       case stripPrefix "package-" name of
         Just lib ->
-          let doc' = doc { docTitle = docTitle doc <> " - the " <> toHtml name <> " library" }
+          let doc' = doc { docTitle = docTitle doc <> " - the " <> toHtml lib <> " library" }
            in Docs (singletonMap lib doc') mempty
         Nothing -> Docs mempty (singletonMap name doc)
 
-getMarkdownDoc :: FilePath -> IO Doc
-getMarkdownDoc fp = do
+getMarkdownDoc :: Source -> FilePath -> IO Doc
+getMarkdownDoc src fp = do
   markdownText <- readFileUtf8 fp
   let htmlText = commonmarkToHtml
         [optSmart, optUnsafe]
         [extStrikethrough, extTable, extAutolink]
         markdownText
   pure Doc
-    { docTitle = "FIXME"
+    { docTitle = extractH1 fp htmlText
     , docBody = preEscapedToHtml htmlText
     , docEditLink = Just $ mconcat
-        [ "https://github.com/haskell-lang/haskell-lang/blob/master/static/tutorial/"
+        [ sourcePrefix src
         , pack $ takeFileName fp
         ]
     }
+
+extractH1 :: FilePath -> Text -> Html
+extractH1 fp t =
+  case mconcat $ fromDocument (parseSTChunks [t]) $// element "h1" &/ content of
+    "" -> error $ "No title found for: " ++ fp
+    x -> toHtml x
+
+sourcePrefix :: Source -> Text
+sourcePrefix HaskellLang =
+  "https://github.com/haskell-lang/haskell-lang/blob/master/static/tutorial/"
+sourcePrefix Local =
+  "https://github.com/fpco/haskell.fpcomplete.com/blob/master/tutorials/"
 
 getUrlDoc :: FilePath -> IO Doc
 getUrlDoc fp = do
