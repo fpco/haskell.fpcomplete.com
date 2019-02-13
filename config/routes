@@ -13,6 +13,7 @@
 /community CommunityR GET
 /about AboutR GET
 /philosophy PhilosophyR GET
+-- NOTE: If you add another one here, don't forget to update src/Handler/Sitemap.hs!
 
 /learn LearnR GET -- index of everything: libraries, tutorials, etc
 /library/#Text LibraryR GET
