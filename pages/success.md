@@ -47,7 +47,7 @@ You and your team will learn...
 * how to handle synchronous and asynchronous exceptions
 * safe concurrent programming techniques
 * efficient data structures
-* mutabile variables
+* mutable variables
 * testing in Haskell
 * network programming
 * serialization and parsing
