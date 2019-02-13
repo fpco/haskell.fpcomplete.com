@@ -9,9 +9,7 @@
 * Address all FIXMEs and undefineds in codebase
 * Import content from fpcomplete.com, at least haskell-syllabus and some linked pages
 * Add a sitemap
-* Include "Edit on Github" links on pages
 * Add automatic 404 checking
-* Add a /build-version
 * Boring Haskell Manifesto: https://docs.google.com/document/d/1nqpx0wSgmdhIO-aWffc3MGR45w4MNOyW8Zbo0eGILII/edit
 * Guides: how do I get started with Haskell? How do I convince my boss to use Haskell? How do I hire Haskellers?
 

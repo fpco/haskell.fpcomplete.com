@@ -19,3 +19,5 @@
 
 /get-started GetStartedR GET
 /get-started/#OS GetStartedOSR GET
+
+/build-version BuildVersionR GitRev appGitRev

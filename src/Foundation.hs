@@ -13,12 +13,14 @@ import Import.NoFoundation
 import Text.Hamlet                 (hamletFile)
 import Yesod.Core.Types            (Logger)
 import qualified ClassyPrelude.Yesod as Y
+import Yesod.GitRev
 
 data App = App
     { appSettings    :: AppSettings
     , appStatic      :: Static -- ^ Settings for static file serving.
     , appLogger      :: Logger
     , appDocs        :: !(IO Docs)
+    , appGitRev      :: !GitRev
     }
 
 mkYesodData "App" $(parseRoutesFile "config/routes")
