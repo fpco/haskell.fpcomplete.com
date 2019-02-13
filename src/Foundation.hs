@@ -18,6 +18,7 @@ data App = App
     { appSettings    :: AppSettings
     , appStatic      :: Static -- ^ Settings for static file serving.
     , appLogger      :: Logger
+    , appDocs        :: !(IO Docs)
     }
 
 mkYesodData "App" $(parseRoutesFile "config/routes")
