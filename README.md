@@ -2,15 +2,11 @@
 
 **TODO**
 
-* Review color scheme
-* Decide: do we want a blog here, or just use fpcomplete.com?
-* Add appropriate license, import content from other repos with licensing worked out
 * Fix top and bottom navbars
 * Address all FIXMEs and undefineds in codebase
-* Import content from fpcomplete.com, at least haskell-syllabus and some linked pages
 * Add automatic 404 checking
-* Boring Haskell Manifesto: https://docs.google.com/document/d/1nqpx0wSgmdhIO-aWffc3MGR45w4MNOyW8Zbo0eGILII/edit
-* Guides: how do I get started with Haskell? How do I convince my boss to use Haskell? How do I hire Haskellers?
+* Redirect pages from fpcomplete.com to haskell.fpcomplete.com: /haskell, /haskell-syllabus
+* Redirects from haskell-lang.org to haskell.fpcomplete.com
 
 This repository contains the code and content for [FP Complete's
 Haskell Homepage](https://haskell.fpcomplete.com/). Unless otherwise

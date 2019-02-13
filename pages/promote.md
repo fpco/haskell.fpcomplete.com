@@ -4,9 +4,20 @@ title: Promote Haskell
 
 FIXME need a lot more content!
 
-* Boring Haskell manifesto
+* Boring Haskell manifesto https://docs.google.com/document/d/1nqpx0wSgmdhIO-aWffc3MGR45w4MNOyW8Zbo0eGILII/edit
 
-# Haskell Success Stories
+## Convince my boss
+
+### Hiring Haskellers
+
+### Getting started
+
+* Learn
+* Training from FP Complete
+* Pilot project
+* Success Program
+
+## Haskell Success Stories
 
 This is a collection of Haskell success stories. The goal in this page is to
 collect blog posts and articles that fulfill the objective in the [call to
