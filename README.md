@@ -12,6 +12,8 @@
 * Include "Edit on Github" links on pages
 * Add automatic 404 checking
 * Add a /build-version
+* Boring Haskell Manifesto: https://docs.google.com/document/d/1nqpx0wSgmdhIO-aWffc3MGR45w4MNOyW8Zbo0eGILII/edit
+* Guides: how do I get started with Haskell? How do I convince my boss to use Haskell? How do I hire Haskellers?
 
 This repository contains the code and content for [FP Complete's
 Haskell Homepage](https://haskell.fpcomplete.com/). Unless otherwise

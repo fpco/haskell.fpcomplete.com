@@ -2,7 +2,9 @@
 title: Haskell Community
 ---
 
-* Start a Discourse?
+There are many community resources 
+
+* [Commercial Haskell Discourse](https://discourse.commercialhaskell.com/) *experimental*
 * [Commercial Haskell Gitter](https://gitter.im/commercialhaskell/commercialhaskell)
 
 FIXME import from https://haskell-lang.org/community

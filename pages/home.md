@@ -11,6 +11,8 @@ services. Let us help you succeed with Haskell.
 
 This site is FP Complete's community-focused set of resources on the Haskell programming language. It contains documentation, opinionated best practices, service offerings, and more.
 
+This is an opinionated site providing opinionated methods of getting started. Click here (wherever) for broader info. Best in class libraries, or use unliftio/rio to collect them together.
+
 [Interact with the community](/community)
 
 ## About FP Complete
@@ -32,3 +34,7 @@ This site is FP Complete's community-focused set of resources on the Haskell pro
 * [Commercial Haskell](https://commercialhaskell.com), a loose collection of commercial Haskell users
 * [Gitter chat for Commercial Haskell](https://gitter.im/commercialhaskell/commercialhaskell)
 * FIXME: do we want to have an FP Complete chat room?
+
+## Why these choices?
+
+FIXME

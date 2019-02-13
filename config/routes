@@ -18,6 +18,4 @@
 /tutorial/#Text TutorialR GET
 
 /get-started GetStartedR GET
-/get-started/osx GetStartedOSXR GET
-/get-started/windows GetStartedWindowsR GET
-/get-started/linux GetStartedLinuxR GET
+/get-started/#OS GetStartedOSR GET

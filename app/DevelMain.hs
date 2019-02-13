@@ -6,7 +6,7 @@
 --
 -- 1. Start up GHCi
 --
--- $ stack ghci ch:lib --no-load --work-dir .stack-work-devel
+-- $ stack ghci hfp:lib --no-load --work-dir .stack-work-devel
 --
 -- 2. Load this module
 --
