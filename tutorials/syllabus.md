@@ -1,5 +1,8 @@
 # Haskell learning syllabus
 
+**NOTE** This page is slightly out of date, and will be updated in the
+near future. Most of the content is still accurate.
+
 Over the years, FP Complete has put together a syllabus of Haskell
 concepts we believe make up a solid level of productivity. Much of
 this is captured in our [Applied
