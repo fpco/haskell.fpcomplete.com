@@ -39,11 +39,10 @@ data Source = HaskellLang | Local
 loadDocs
   :: Bool -- ^ dev mode
   -> IO Docs
-loadDocs devMode = runConduitRes $ (<>)
-  <$>  ( sourceDirectoryDeep True "tutorials"
-      .| foldMapMC (liftIO . toDocs devMode Local))
-  <*>  ( sourceDirectoryDeep True "vendor/haskell-lang/static/tutorial"
-      .| foldMapMC (liftIO . toDocs devMode HaskellLang))
+loadDocs devMode =
+         runConduitRes
+       $ sourceDirectoryDeep True "tutorials"
+      .| foldMapMC (liftIO . toDocs devMode Local)
 
 toDocs
   :: Bool -- ^ dev mode
