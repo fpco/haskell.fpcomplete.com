@@ -18,6 +18,9 @@ COPY build/hfp /opt/app/hfp
 COPY static /opt/app/static
 COPY config /opt/app/config
 COPY vendor /opt/app/vendor
+COPY tutorials /opt/app/tutorials
+COPY pages /opt/app/pages
+
 
 WORKDIR /opt/app
 
