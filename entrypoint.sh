@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Add local user
+# Either use the LOCAL_USER_ID if passed in at runtime or
+# fallback to 9001
+USER_ID=${LOCAL_USER_ID:-9001}
+APP_DIR=${APP_DIR:-/opt/app}
+
+echo "Starting with UID : $USER_ID"
+useradd --shell /bin/bash -u $USER_ID -o -c "" -m user
+export HOME=/home/user
+
+# set correct permissions on APP_DIR and subfolders
+chown -R user. $APP_DIR
+
+exec /sbin/pid1 -u user -g user "$@"

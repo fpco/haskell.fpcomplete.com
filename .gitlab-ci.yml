@@ -1,0 +1,56 @@
+image: registry.gitlab.fpcomplete.com/fpco/default-build-image:5354
+
+variables:
+  KUBECONFIG: /etc/deploy/kubeconfig.yaml
+  CACHE_S3_VERSION: "v0.1.4"
+  BASE_BRANCH: "master"
+  OS_NAME: "linux"
+  CACHE_S3_PREFIX: "haskell-fpcomplete-com"
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - export LANG=en_US.UTF-8
+    - curl -f -L "https://github.com/fpco/cache-s3/releases/download/${CACHE_S3_VERSION}/cache-s3-${CACHE_S3_VERSION}-${OS_NAME}-x86_64.tar.gz" | tar xz -C /usr/local/bin 'cache-s3';
+      if [ -x $(readlink -f "/usr/local/bin/cache-s3") ]; then
+        cache-s3 --prefix="${CACHE_S3_PREFIX}"
+                 --git-branch="${CI_BUILD_REF_NAME}"
+                 --suffix="${OS_NAME}"
+                 restore stack --base-branch="${BASE_BRANCH}";
+        cache-s3 --prefix="${CACHE_S3_PREFIX}"
+                 --git-branch="${CI_BUILD_REF_NAME}"
+                 --suffix="${OS_NAME}"
+                 restore stack work --base-branch="${BASE_BRANCH}";
+      fi
+    - make build
+    - make build-docker-image
+    - docker login -u gitlab-ci-token -p "${CI_BUILD_TOKEN}" "${CI_REGISTRY}"
+    - make push
+    - if [ "${CI_BUILD_REF_NAME}" = "${BASE_BRANCH}" ]; then
+        cache-s3 --prefix="${CACHE_S3_PREFIX}"
+                 --git-branch="${CI_BUILD_REF_NAME}"
+                 --suffix="${OS_NAME}"
+                 save stack;
+      fi;
+      cache-s3 --prefix="${CACHE_S3_PREFIX}"
+               --git-branch="${CI_BUILD_REF_NAME}"
+               --suffix="${OS_NAME}"
+               save stack work
+
+deploy_prod:
+  stage: deploy
+  script:
+    - mkdir -p /etc/deploy
+    - echo "${KUBECONFIG_YAML}" > /etc/deploy/kubeconfig.enc
+    - base64 -d </etc/deploy/kubeconfig.enc > ${KUBECONFIG}
+    - make deploy
+  environment:
+    name: production
+    url: https://haskell.fpcomplete.com
+  when: manual
+  only:
+    - master

@@ -1,0 +1,3 @@
+registry:
+  private: true
+  secretName: registry-key
