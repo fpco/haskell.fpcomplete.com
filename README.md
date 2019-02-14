@@ -1,13 +1,5 @@
 # FP Complete's Haskell Homepage
 
-**TODO**
-
-* Address all FIXMEs in codebase
-* Clean up homepage
-* Add automatic 404 checking
-* Redirect pages from fpcomplete.com to haskell.fpcomplete.com: /haskell, /haskell-syllabus
-* Redirects from haskell-lang.org to haskell.fpcomplete.com
-
 This repository contains the code and content for [FP Complete's
 Haskell Homepage](https://haskell.fpcomplete.com/). Unless otherwise
 marked, content is copyright FP Complete under the [Creative Commons
