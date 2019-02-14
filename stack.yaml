@@ -1,1 +1,4 @@
 resolver: lts-12.21
+
+packages:
+- .
