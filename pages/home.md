@@ -45,8 +45,8 @@ help your team in a cost-effective way.
 
 Haskell is an advanced, purely-functional programming language. Its
 focus on strong, static typing and declarative code leads to code we
-believe is **easy to maintain**, **productive to write**, and
-**competitive in performance**. Haskell is a general purpose language,
+believe is **maintainable**, **productive**, and
+**efficient**. Haskell is a general purpose language,
 with significant usage in:
 
 * Front end web development
