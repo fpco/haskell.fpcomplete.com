@@ -1,6 +1,7 @@
 image: registry.gitlab.fpcomplete.com/fpco/default-build-image:5354
 
 variables:
+  GIT_SUBMODULE_STRATEGY: recursive
   KUBECONFIG: /etc/deploy/kubeconfig.yaml
   CACHE_S3_VERSION: "v0.1.4"
   BASE_BRANCH: "master"
