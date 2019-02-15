@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 replicaCount: 1
 image:
-  repository: registry.gitlab.fpcomplete.com/fpco/haskell.fpcomplete.com
+  repository: registry.gitlab.fpcomplete.com/fpco-mirrors/haskell.fpcomplete.com
   tag: latest
   pullPolicy: IfNotPresent
 service:
