@@ -1,3 +1,4 @@
+replicaCount: 2
 registry:
   private: true
   secretName: gitlab-ci-registrykey
