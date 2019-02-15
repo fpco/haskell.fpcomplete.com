@@ -2,6 +2,10 @@
 title: FP Complete's Haskell Homepage
 ---
 
+<div class="row">
+
+<div class="col-md-8">
+
 <p class="lead">FP Complete is the leading provider of commercial Haskell tools and
 services. Let us help you succeed with Haskell.</p>
 
@@ -10,9 +14,23 @@ and recommendations on how to adopt Haskell at your company. This site
 contains an opinionated set of recommendations that the FP Complete
 team found results in the best results with Haskell.
 
-<div class="row" style="background-color: #eee">
+</div>
+
+<div class="col-md-4" style="text-align: center">
+
+<span style="font-size:150%;font-weight:bold">New to Haskell?</span>
+
+<a class="btn btn-primary" style="color:white">Get me started!</a>
+
+</div>
+
+</div>
+
+<div class="row" style="margin-bottom: 4em">
 
 <div class="col-lg-4">
+
+<div class="standout">
 
 ## Learn
 
@@ -21,7 +39,11 @@ our [learn page](/learn).
 
 </div>
 
+</div>
+
 <div class="col-lg-4">
+
+<div class="standout">
 
 ## Promote
 
@@ -30,12 +52,18 @@ convince yourself? Learn about how we [promote Haskell](/promote).
 
 </div>
 
+</div>
+
 <div class="col-lg-4">
+
+<div class="standout">
 
 ## Success
 
 Learn about how [FP Complete's Haskell Success Program](/success) can
 help your team in a cost-effective way.
+
+</div>
 
 </div>
 

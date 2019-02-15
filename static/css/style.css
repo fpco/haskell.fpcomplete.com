@@ -354,3 +354,12 @@ a:hover {
   user-select: none;           /* Non-prefixed version, currently
                                   not supported by any browser */
 }
+
+/* Homepage */
+.standout {
+    border: 1px solid #19111f;
+    background: #ece6ff;
+    padding: 5px;
+    height: 100%;
+    text-align: center;
+}
