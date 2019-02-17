@@ -70,7 +70,7 @@ Or, as you may have guessed:
 ## Adding packages
 
 Let's say we want to use a package that doesn't ship with GHC itself,
-like [http-conduit](https://haskell-lang.org/library/http-client). The
+like [http-conduit](/library/http-client). The
 `stack exec` command - and its shortcuts like `stack ghc` and `stack
 runghc` - all take a `--package` argument indicating that an
 additional package needs to be present. So consider this `http.hs`

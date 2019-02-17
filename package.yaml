@@ -83,6 +83,20 @@ executables:
     - condition: flag(library-only)
       buildable: false
 
+tests:
+  check404s:
+    main: Main.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hfp
+    - hspec
+    - rio
+    - spiderweb
+
 # Define flags used by "yesod devel" to make compilation faster
 flags:
   library-only:

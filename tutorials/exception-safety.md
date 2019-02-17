@@ -18,7 +18,7 @@ are:
   ecosystem
 
 Many of the ideas behind this tutorial originated with the
-[safe-exceptions](/package/safe-exceptions) package, and as such it is
+[safe-exceptions](/library/safe-exceptions) package, and as such it is
 strongly recommended that you work with that package to get maximum
 correctness and ease-of-use.
 
@@ -33,7 +33,7 @@ discussion is left for a different time.
 
 We're going to follow the safe-exceptions package's definitions for
 exception types. It is strongly recommended that you read
-[the safe-exceptions tutorials](/package/safe-exceptions) first. As a
+[the safe-exceptions tutorials](/library/safe-exceptions) first. As a
 quick summary:
 
 * While there is a difference in the type hierarchy for synchronous

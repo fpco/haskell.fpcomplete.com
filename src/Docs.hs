@@ -11,13 +11,14 @@ import ClassyPrelude.Yesod hiding (Source)
 import System.FilePath
 import CMarkGFM
 import Text.Blaze.Html (preEscapedToHtml)
+import Text.Blaze.Html5 (h1)
 import qualified Data.Text as T
 import Network.HTTP.Simple
 import System.Mem.Weak (deRefWeak)
 import Control.Concurrent (threadDelay)
 import Data.Function (fix)
 import Text.HTML.DOM (parseSTChunks)
-import Text.XML.Cursor (fromDocument, ($//), element, content, (&/))
+import Text.XML.Cursor (fromDocument, ($//), element, content)
 
 data Docs = Docs
   { docsLibraries :: !(Map Text Doc)
@@ -34,7 +35,7 @@ data Doc = Doc
   , docEditLink :: !(Maybe Text)
   }
 
-data Source = HaskellLang | Local
+data Source = Local
 
 loadDocs
   :: Bool -- ^ dev mode
@@ -69,8 +70,13 @@ getMarkdownDoc src fp = do
         [optSmart, optUnsafe]
         [extStrikethrough, extTable, extAutolink]
         markdownText
+  title <-
+    case extractH1 htmlText of
+      [x] -> pure x
+      [] -> error $ "No h1 found for: " <> fp
+      _ -> error $ "Multiple h1s found for: " <> fp
   pure Doc
-    { docTitle = extractH1 fp htmlText
+    { docTitle = title
     , docBody = preEscapedToHtml htmlText
     , docEditLink = Just $ mconcat
         [ sourcePrefix src
@@ -78,15 +84,12 @@ getMarkdownDoc src fp = do
         ]
     }
 
-extractH1 :: FilePath -> Text -> Html
-extractH1 fp t =
-  case mconcat $ fromDocument (parseSTChunks [t]) $// element "h1" &/ content of
-    "" -> error $ "No title found for: " ++ fp
-    x -> toHtml x
+extractH1 :: Text -> [Html]
+extractH1 t = map allContent (fromDocument (parseSTChunks [t]) $// element "h1")
+  where
+    allContent node = foldMap toHtml $ node $// content
 
 sourcePrefix :: Source -> Text
-sourcePrefix HaskellLang =
-  "https://github.com/haskell-lang/haskell-lang/blob/master/static/tutorial/"
 sourcePrefix Local =
   "https://github.com/fpco/haskell.fpcomplete.com/blob/master/tutorials/"
 
@@ -103,7 +106,10 @@ getUrlDoc fp = do
             markdownText
       pure Doc
         { docTitle = toHtml title
-        , docBody = preEscapedToHtml htmlText
+        , docBody =
+            case extractH1 htmlText of
+              [] -> h1 (toHtml title) <> preEscapedToHtml htmlText
+              _ -> preEscapedToHtml htmlText
         , docEditLink = Nothing
         }
     _ -> error $ "Malformed file: " ++ show fp

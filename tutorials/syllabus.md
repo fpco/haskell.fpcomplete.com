@@ -38,8 +38,8 @@ Covers some of the most commonly used data structures in Haskell, and
 the libraries providing them.
 
 * [String types (text and bytestring)](/tutorial/string-types)
-* [vector](https://haskell-lang.org/library/vector)
-* [containers](https://haskell-lang.org/library/containers)
+* [vector](/library/vector)
+* [containers](/library/containers)
 
 ## General patterns
 
@@ -65,7 +65,7 @@ they work, when they're useful, and possible pitfalls.
 * blaze-builder/bytestring-builder
 * blaze-html
 * attoparsec
-* [aeson](https://haskell-lang.org/library/aeson)
+* [aeson](/library/aeson)
 * yaml
 * xml-conduit/html-conduit
 * base16-bytestring/base64-bytestring
