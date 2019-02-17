@@ -52,6 +52,5 @@ deploy_prod:
   environment:
     name: production
     url: https://haskell.fpcomplete.com
-  when: manual
   only:
     - master
