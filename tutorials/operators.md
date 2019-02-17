@@ -172,7 +172,7 @@ comes from the `Monoid` typeclass, which represents types which have
 an identity and an associative binary operation. Some examples:
 
 * For lists, `<>` is the same as `++` (append two lists)
-* For [vectors](https://haskell-lang.org/package/vector), this logic
+* For [vectors](/library/vector), this logic
   holds as well
 * For
   [`Set`](https://www.stackage.org/haddock/lts-6.7/containers-0.5.6.2/Data-Set.html)s,
@@ -266,7 +266,7 @@ do x <- bar
 
 Other common examples including parsers and serialization
 libraries. Here's an example you might see using the
-[aeson package](/package/aeson):
+[aeson package](/library/aeson):
 
 ```haskell
 data Person = Person { name :: Text, age :: Int } deriving Show

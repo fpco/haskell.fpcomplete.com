@@ -277,8 +277,7 @@ these packages (Data.ByteString.Lazy and Data.Text.Lazy). While these
 data types certainly have some use cases, my overall recommendation
 is: don't use them. If you need to deal with data too large to fit
 into memory, you should use a streaming data library instead, like
-[conduit](http://haskell-lang.org/library/conduit) or
-[pipes](https://haskell-lang.org/library/pipes).
+[conduit](/library/conduit).
 
 By avoiding the strict/lazy choice: we've removed two of the five
 types listed above. The final choice is `String`, which is the only

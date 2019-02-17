@@ -143,7 +143,7 @@ using Stack.
 
 What's next?
 
-1. [Pickup a learning resource](https://haskell-lang.org/documentation). I can recommend [Haskell Programming from First Principles](http://haskellbook.com), but there are more resources available.
+1. [Pickup a learning resource](/learn). I can recommend [Haskell Programming from First Principles](http://haskellbook.com), but there are more resources available.
 
 2. [Read the Stack documentation](https://haskellstack.org) to learn more about building and managing Haskell programs and libraries using Stack.
 

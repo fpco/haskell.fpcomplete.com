@@ -349,7 +349,7 @@ surprising things worth pointing out right off the bat:
    async exception. If your action misbehaves with async exceptions,
    canceling may fail. We'll demonstrate that below, but I recommend
    checking out the
-   [safe-exceptions tutorial](https://haskell-lang.org/library/safe-exceptions)
+   [safe-exceptions tutorial](/library/safe-exceptions)
    for advice on doing this right.
 
 But before we can get into details, let's just see the launching of

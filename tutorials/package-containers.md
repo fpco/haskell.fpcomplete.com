@@ -567,5 +567,5 @@ better performance.
 Here is a list of some packages and corresponding tutorials, that can help you choose and
 get started with an appropriate data structure for your problem:
 
-* [vector](https://www.stackage.org/lts/package/vector): [Efficient Packed-Memory Data Representations - vector library](https://haskell-lang.org/library/vector)
-* [bytestring](https://www.stackage.org/lts/package/bytestring) and [text](https://www.stackage.org/lts/package/text): [String Types](https://haskell-lang.org/tutorial/string-types)
+* [vector](https://www.stackage.org/lts/package/vector): [Efficient Packed-Memory Data Representations - vector library](/library/vector)
+* [bytestring](https://www.stackage.org/lts/package/bytestring) and [text](https://www.stackage.org/lts/package/text): [String Types](/tutorial/string-types)

@@ -365,11 +365,11 @@ closed. Let's use one of these to explore the basic API and bit, and
 implement a concurrent URL downloader in the process.
 
 __NOTE__ This example takes advantage of the wonderful
-[async library](https://haskell-lang.org/library/async), which goes
+[async library](/library/async), which goes
 hand-in-hand with STM. Once you've finished this tutorial, it's
 strongly advised to go and read about async to get the rest of the
 story with concurrency in Haskell. We're also using the
-[http-conduit library](https://haskell-lang.org/library/http-client)
+[http-conduit library](/library/http-client)
 for HTTP requests.
 
 ```haskell
@@ -479,4 +479,4 @@ some cases *unlifting*) where needed.
 
 STM is most useful in concurrent applications. The best next step is
 to
-[read up on the async library](https://haskell-lang.org/library/async).
+[read up on the async library](/library/async).

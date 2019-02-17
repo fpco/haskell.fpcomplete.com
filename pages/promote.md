@@ -83,7 +83,7 @@ seen companies succeed greatly using a few techniques:
   a huge market of Haskellers.
 * Hire non-Haskellers and train them. With the growing popularity of
   functional programming, Haskell's concepts are no longer foreign to
-  developers. We've provided lots of [learning material](/learning) on
+  developers. We've provided lots of [learning material](/learn) on
   this site to help with that, and are always available to [help your
   team succeed](/success).
 * Supplement your team with consultants. For more information, check
