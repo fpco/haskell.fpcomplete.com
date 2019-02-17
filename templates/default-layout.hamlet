@@ -17,6 +17,8 @@ $doctype 5
     <!-- Custom styles for this template -->
     <link href=@{StaticR css_style_css} rel="stylesheet" type="text/css">
 
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/styles/default.min.css">
+
     #{pageHead}
 
   <body>
@@ -87,6 +89,9 @@ $doctype 5
                 <li>
                   <a href=@{CommunityR}>Community
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/haskell.min.js">
+    <script>hljs.initHighlightingOnLoad();
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-36928035-5"> -->
     <script>
