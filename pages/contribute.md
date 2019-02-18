@@ -21,3 +21,4 @@ good issue to get started with. Many of the links below are filtered
 for issues specifically tagged for newcomers.
 
 * [The Stack build tool](https://github.com/commercialhaskell/stack/issues?q=is%3Aopen+is%3Aissue+label%3A%22newcomer+friendly%22)
+* [This web site's content](https://github.com/fpco/haskell.fpcomplete.com/issues/)

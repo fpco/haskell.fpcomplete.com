@@ -26,7 +26,7 @@ getLearnR = do
       <p>
         In addition to free online learning material, we also offer
         training coursing at all levels. For more information, see
-        <a href="https://www.fpcomplete.com/training">our training page
+        <a href="https://www.fpcomplete.com/training">our training page#
         \.
 
       <div .container>
@@ -59,6 +59,11 @@ getLearnR = do
             <p>
               We also recommend checking out our
               <a href=@{TutorialR "best-practices"}>Haskell best practices#
+              \.
+
+            <p>
+              When you're ready, it's a great idea to try
+              <a href=@{ContributeR}>contributing to an open source Haskell project#
               \.
 
           <div .col-lg-4>

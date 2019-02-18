@@ -89,6 +89,8 @@ $doctype 5
                   <a href=@{PromoteR}>Promote Haskell
                 <li>
                   <a href=@{CommunityR}>Community
+                <li>
+                  <a href=@{ContributeR}>Contribute
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/haskell.min.js">
