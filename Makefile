@@ -13,6 +13,8 @@ require-%:
 ## Build project
 build:
 	@mkdir -p build
+	# FIXME temporary hack to work around lack of proper rebuild on CI
+	@stack clean
 	@stack build --copy-bins --local-bin-path=build
 
 ## Run docker image
