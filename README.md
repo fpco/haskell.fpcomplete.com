@@ -49,7 +49,10 @@ practices.
 This website replaces some previous false starts (and mistakes) at trying to create an opinionated hub of Haskell information. Previously, some FP Complete members participated in haskell-lang.org as another vision of an opinionated Haskell site. Later, we sought out collaborators for creating a more complete Commercial Haskell website.
 
 haskell-lang.org was a mistake, and there was insufficient interest in
-commercialhaskell.com. As such, we decided to focus efforts on a site
+commercialhaskell.com. Given that the branding for haskell-lang.org was
+incorrect, there was little interest from others in the general concept
+of creating an opinionated site, and we at FP Complete were still passionate
+about this topic, we decided to focus efforts on a site
 under our own branding and control.
 
 This site is unapologetically opinionated, and follows what we have
