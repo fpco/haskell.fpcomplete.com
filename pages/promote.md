@@ -50,7 +50,7 @@ post](http://www.snoyman.com/blog/2017/04/haskell-success-stories)).
 
 + [Technical Underpinnings](http://blog.newbusinessmonitor.co.uk/posts/2017-04-25-technical-underpinnings.html) - description of a working haskell stack
 + [My “Haskell In Production” Story](https://medium.com/@djoyner/my-haskell-in-production-story-e48897ed54c)
-+ [Shipping Haskell via Homebrew](http://chrispenner.ca/post/homebrew-haskell)
++ [Shipping Haskell via Homebrew](http://chrispenner.ca/posts/homebrew-haskell)
 + [Use Haskell to attach binaries to GitHub releases](http://taylor.fausak.me/2016/05/09/add-files-to-github-releases/)
 + [How we secretly introduced Haskell and got away with it](https://tech.channable.com/posts/2017-02-24-how-we-secretly-introduced-haskell-and-got-away-with-it.html)
 + [Parse Ruby Objects in Haskell](https://filib.io/posts/2017-04-24-parse-ruby-objects-in-haskell.html)
