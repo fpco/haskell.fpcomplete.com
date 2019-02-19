@@ -6,7 +6,7 @@ title: Haskell Success program
 
 FP Complete's corporate mission is to **increase the corporate
 adoption of Haskell**. One of the primary challenges we've heard from
-corporate users of Haskell is the need to *commercial support*.
+corporate users of Haskell is the need for *commercial support*.
 
 FP Complete offers general [consulting
 services](https://www.fpcomplete.com/consulting), but for many
