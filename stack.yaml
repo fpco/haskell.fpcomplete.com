@@ -1,5 +1,9 @@
 resolver: lts-12.21
 
+# Seems to be needed by cache-s3
+packages:
+- .
+
 extra-deps:
 - github: fpco/spiderweb
   commit: 7acb788f62e7c46b9d72f29331561a3d20821496
