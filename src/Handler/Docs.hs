@@ -51,7 +51,7 @@ getLearnR = do
             <p>
               Once you know the basics, it's time to solidify your skills.
               Follow our
-              <a href=@{TutorialR "syllabus"}>Haskell syllabus
+              <a href=@{SyllabusR}>Haskell syllabus
               for our recommended set of material. You can also review our
               <a href="https://github.com/fpco/applied-haskell">Applied Haskell commercial training#
               \, available freely on Github.

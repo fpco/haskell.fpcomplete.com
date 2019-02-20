@@ -24,7 +24,7 @@ brand new to Haskell, or providing domain specific assistance to an
 experienced Haskell team.
 
 Our training typically follows our [Haskell
-syllabus](/tutorial/syllabus), with adjustments made for your team's
+syllabus](/syllabus), with adjustments made for your team's
 skill level and goals.
 
 ## Promoting Haskell

@@ -76,7 +76,7 @@ $doctype 5
                 <li>
                   <a href=@{LearnR}>Learn
                 <li>
-                  <a href=@{TutorialR "syllabus"}>Syllabus
+                  <a href=@{SyllabusR}>Syllabus
                 <li>
                   <a href=@{TutorialR "best-practices"}>Best practices
 
