@@ -51,38 +51,37 @@ data Docs = Docs
   , docsTutorials :: !(Map Text PageHtml)
   , docsPages :: !(Map Text PageHtml)
   }
-instance Semigroup Docs where
-  Docs x1 x2 x3 <> Docs y1 y2 y3 = Docs (x1 <> y1) (x2 <> y2) (x3 <> y3)
-instance Monoid Docs where
-  mempty = Docs mempty mempty mempty
 
 loadDocs :: IO Docs
-loadDocs = runConduitRes $ src .| foldC
+loadDocs = Docs
+  <$> loadDir True "libraries"
+  <*> loadDir False "tutorials"
+  <*> loadDir False "pages"
   where
-    src = tutorials >> pages
+    loadDir addLibraryName subdir =
+      runConduitRes $
+      sourceDirectoryDeep True ("content" </> subdir) .|
+      foldMapMC (toDocMap addLibraryName)
 
-    tutorials = sourceDirectoryDeep True "tutorials" .| mapMC toDocs
-    pages = sourceDirectoryDeep True "pages" .|
-            filterC (\fp -> takeExtension fp == ".md") .|
-            mapMC (\fp -> liftIO $ do
-                      page <- getMarkdownDoc fp
-                      pure $ Docs mempty mempty $ singletonMap
-                        (fromString $ takeBaseName fp)
-                        page)
-
-toDocs :: MonadIO m => FilePath -> m Docs
-toDocs fp = liftIO $
+toDocMap
+  :: MonadIO m
+  => Bool
+  -> FilePath
+  -> m (Map Text PageHtml)
+toDocMap addLibraryName fp = liftIO $
   case splitExtension $ takeFileName fp of
     (name, ".md") -> byName name <$> getMarkdownDoc fp
     (name, ".yaml") -> byName name <$> getYamlDoc fp
     _ -> pure mempty
   where
-    byName (fromString -> name) page =
-      case stripPrefix "package-" name of
-        Just lib ->
-          let page' = page { pageTitle = pageTitle page <> " - the " <> toHtml lib <> " library" }
-           in Docs (singletonMap lib page') mempty mempty
-        Nothing -> Docs mempty (singletonMap name page) mempty
+    byName :: String -> PageHtml -> Map Text PageHtml
+    byName name page = singletonMap (fromString name) $ addLibraryName' name page
+
+    addLibraryName' name page
+      | addLibraryName =
+          let title = pageTitle page <> " - the " <> toHtml name <> " library"
+           in page { pageTitle = title }
+      | otherwise = page
 
 renderMarkdown :: ByteString -> IO Html
 renderMarkdown bodyBS = do
