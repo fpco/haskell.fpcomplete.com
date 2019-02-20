@@ -1,4 +1,6 @@
-# Mutable variables
+---
+title: Mutable variables
+---
 
 Section exercise: write your own `TMVar` implementation.
 

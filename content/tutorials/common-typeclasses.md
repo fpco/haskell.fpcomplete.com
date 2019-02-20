@@ -1,4 +1,6 @@
-# Common Typeclasses
+---
+title: Common Typeclasses
+---
 
 Section exercises:
 

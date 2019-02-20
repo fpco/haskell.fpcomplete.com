@@ -1,4 +1,6 @@
-# Lenses
+---
+title: Lenses
+---
 
 Firstly, what is lens/lenses/optics?
 

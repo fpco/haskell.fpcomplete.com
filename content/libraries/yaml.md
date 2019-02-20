@@ -1,4 +1,6 @@
-# yaml
+---
+title: Parsing and rendering YAML
+---
 
 Section exercise: write a program using the `rio` template that
 receives a database connection string as an environment variable, by

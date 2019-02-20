@@ -1,4 +1,6 @@
-# Monad Transformers
+---
+title: Monad Transformers
+---
 
 Monads are a convenient way to to sequence computation with
 effects. Different monads can provide different kinds of effects:

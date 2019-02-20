@@ -49,9 +49,6 @@ be more efficient, it does have some structure to it and we will take advantage
 of it, so we will use a custom data type `SSN` as a key.
 
 ```haskell
-#!/usr/bin/env stack
--- stack --install-ghc --resolver lts-7.7 runghc
-
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Data.List as List

@@ -1,4 +1,6 @@
-# Performance
+---
+title: Performance
+---
 
 Section exercise: write a Gauge benchmark suite to test various
 implementations of `average` against each other.

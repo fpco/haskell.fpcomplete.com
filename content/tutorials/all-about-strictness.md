@@ -1,3 +1,7 @@
+---
+title: All about strictness
+---
+
 Blog post version: https://www.fpcomplete.com/blog/2017/09/all-about-strictness
 
 Haskell is&mdash;perhaps infamously&mdash;a _lazy_ language. The basic

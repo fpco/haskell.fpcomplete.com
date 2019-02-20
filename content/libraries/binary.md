@@ -65,8 +65,7 @@ instance Binary Transaction
 
 main :: IO ()
 main = do
-  let bytes =
-   encode (Txn { account = "Cash", amount = 10 })
+  let bytes = encode (Txn { account = "Cash", amount = 10 })
   putStrLn $ "Encode: " ++ show bytes
   putStrLn $ "Decode: " ++
     show (decode bytes :: Transaction)
@@ -105,8 +104,7 @@ instance Binary Transaction where
 
 main :: IO () -- The main action is unchanged from before.
 main = do
-  let bytes =
-    encode (Txn { account = "Cash", amount = 1000 })
+  let bytes = encode (Txn { account = "Cash", amount = 1000 })
   putStrLn $ "Encode: " ++ show bytes
   putStrLn $ "Decode: " ++
     show (decode bytes :: Transaction)
