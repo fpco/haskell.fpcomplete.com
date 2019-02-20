@@ -28,6 +28,7 @@ getSitemapR = do
     yield $ SitemapUrl AboutR Nothing Nothing (Just 0.9)
     yield $ SitemapUrl LearnR Nothing Nothing (Just 0.7)
     yield $ SitemapUrl PhilosophyR Nothing Nothing (Just 0.7)
+    yield $ SitemapUrl SyllabusR Nothing Nothing (Just 0.7)
     yield $ SitemapUrl GetStartedR Nothing Nothing (Just 0.7)
     for_ [minBound..maxBound] $ \os ->
       yield $ SitemapUrl (GetStartedOSR os) Nothing Nothing (Just 0.3)

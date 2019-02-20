@@ -1,4 +1,6 @@
-# Haskell learning syllabus
+---
+title: Haskell learning syllabus
+---
 
 **NOTE** This page is slightly out of date, and will be updated in the
 near future. Most of the content is still accurate.

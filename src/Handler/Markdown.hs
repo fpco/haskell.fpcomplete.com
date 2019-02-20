@@ -23,3 +23,6 @@ getAboutR = displayMarkdown "about"
 
 getPhilosophyR :: Handler Html
 getPhilosophyR = displayMarkdown "philosophy"
+
+getSyllabusR :: Handler Html
+getSyllabusR = displayMarkdown "syllabus"
