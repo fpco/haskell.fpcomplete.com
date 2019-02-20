@@ -1,167 +1,202 @@
 ---
-title: Haskell learning syllabus
+title: Applied Haskell Syllabus
 ---
 
-**NOTE** This page is slightly out of date, and will be updated in the
-near future. Most of the content is still accurate.
+Applied Haskell is a commercial training programming focusing on
+teaching _intermediate Haskell_. The goal is to help someone move from
+knowing Haskell basics to being able to write commercial software,
+with enough knowledge to pick up any new skills needed on demand.
 
-Over the years, FP Complete has put together a syllabus of Haskell
-concepts we believe make up a solid level of productivity. Much of
-this is captured in our [Applied
-Haskell](https://github.com/fpco/applied-haskell) training course.
+**If you're new to Haskell**, please check out our [learning
+page](/learn) for introductory material.
 
-This outline provides a wide array of content, focused on practical
-lessons towards writing real-world applications. It presumes a basic
-knowledge of Haskell. If you're new to Haskell, we recommend the book
-[Haskell Programming from First Principles](http://haskellbook.com/).
+The content below is freely available. If you're interested in
+participating in a class teaching this material, please [check out our
+training page](https://www.fpcomplete.com/training).
 
-For more general purpose learning information, check out our [Learn
-Haskell](/learn) page.
+## Course format
 
-## Core information
+If you're not participating in a instructor-led course, feel free to
+skip this section.
 
-You understand the basics of Haskell syntax and some common library
-functions. This section should get you up to speed with many commonly
-used features of Haskell, to provide a foundation for understanding
-code in general, and to follow the rest of this outline in particular.
+This course is typically taught over a two day period by an FP
+Complete Haskell engineer. There is more material available here than
+can be taught in two days, so some content is typically skipped in the
+classroom, with student interest guiding what we focus on. This course
+also has a one day subset.
 
-* [Get Started with Stack](/get-started)
-* [Exceptions Best Practices](https://www.fpcomplete.com/blog/2016/11/exceptions-best-practices-haskell)
-    * [Asynchronous Exception Handling in Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell) (deeper dive)
-* [Operator Glossary](/tutorial/operators)
-* [Synonyms in base](/tutorial/synonyms)
-* [Common language extensions](https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/guide-to-ghc-extensions)
-* [Common typeclasses](https://wiki.haskell.org/Typeclassopedia)
-* [All About Strictness](https://www.fpcomplete.com/blog/2017/09/all-about-strictness)
+In order to maximize the value of this course, we strongly recommend
+that you:
+
+* Ensure you meet the prerequisites mentioned below
+* Set up your system before attending the class following the instructions below
+* At least skim through the material below before the course
+* Perform the exercises during the course
+* Take time after the course to review the material again and take
+  another crack at any exercises you were not successful at
+
+## Prerequisites
+
+You should already be comfortable with Haskell syntax, common control
+structures, and typeclasses. For the most part: if you understand how
+to use monads, you're ready for this course. Though we'll cover it in
+more detail during the course, you should also read [all about
+strictness](/tutorial/all-about-strictness), as experience has shown
+this to be a topic that trips people up often.
+
+As a self test, we recommend ensuring you're able to do the following:
+
+* Define `fmap` in terms of `>>=` and `return`
+* Define `fmap` in terms of `<*>` and `pure`
+* Define `>>=` in terms of `Applicative` instance and `join`
+* Define `join` in terms of `>>=`
+* Explain the intuition behind: what can you do with `Monad` and not `Applicative`?
+
+If you're looking to read up on this, our recommendations are:
+
+* [Haskell Programming from First Principles](http://haskellbook.com/)
+  for a thorough coverage of all relevant topics
+* For a quick crash course on `Functor`/`Applicative`/`Monad`, see
+  [Michael's blog
+  post](https://www.snoyman.com/blog/2017/01/functors-applicatives-and-monads)
+
+Let the course material begin!
+
+## System setup
+
+We will be using the Stack build tool extensively throughout this
+course. To get your system set up:
+
+1. Download and install Stack following [our Getting Started
+   guide](/get-started). If you already have Stack installed, run
+   `stack upgrade` to ensure you have the latest version.
+2. We're going to be using LTS Haskell version 12.21. (We'll explain
+   what LTS Haskell is in the material below.) You may as well install
+   an unnecessarily broad number of packages right off the bat:
+
+   ```
+   $ stack build --resolver lts-12.21 classy-prelude-yesod lens rio yesod-test foldl microlens-platform wai-conduit hspec`
+   ```
+
+     * You may also find it convenient to run `stack config set resolver lts-12.21`
+       from outside of a project to set your global resolver to match.
+
+3. Make sure you can run the script below successfully. Save it to a
+   file ending with `.hs` and then run `stack filename.hs`. On
+   non-Windows systems, you can also do `chmod +x filename.hs &&
+   ./filename.hs`
+
+   ```haskell
+   #!/usr/bin/env stack
+   -- stack --resolver lts-12.21 script
+   main = putStrLn "Hello World!"
+   ```
+
+Note that the comment on line 2 above is necessary!
+
+## Applied Haskell 101
+
+We'll start off with a high level overview of the content we're going
+to cover, our approach to Haskell, and tooling to be aware of.
+
+[Applied Haskell 101](/tutorial/applied-haskell-101)
+
+## The RIO approach
+
+The `rio` library codifies much of our recommended best practices. It
+includes an approach to structuring applications, a standard library,
+a Prelude replacement, and more.
+
+[The `rio` library](/library/rio.md)
+
+## Mutability and concurrency
+
+Haskell is immutable-by-default, but that default can be
+overridden. And this mutability oftens pops up in the context of
+concurrency. This is one of Haskell's greatest strengths, and we'll
+cover it now.
+
+* [Mutable variables](/tutorial/mutable-variables.md)
+* [The async library](/library/async.md)
+
+## Strictness, laziness, and evaluation
+
+One of the hallmarks of Haskell is lazy evaluation. Understanding how
+this works, when to use strictness, and how to avoid space leaks are
+vital to production quality Haskell code.
+
+* [Data types](data-types.md)
+* [All About Strictness](/tutorial/all-about-strictness.md)
 
 ## Data structures
 
-Covers some of the most commonly used data structures in Haskell, and
-the libraries providing them.
+Lists are a common data structure in Haskell, but they are often
+overused. It's vital to understand other common data structures. This
+section intentionally comes after the strictness section, as the
+former is a prerequisite for this material.
 
-* [String types (text and bytestring)](/tutorial/string-types)
-* [vector](/library/vector)
-* [containers](/library/containers)
+* [Data Structures](data-structures.md)
+* [String Types](string-types.md)
+* [Containers](containers.md)
+* [Vector](vector.md)
+* Builders and difference lists
+* Let's revisit that data structure quiz...
+
+## Exception handling
+
+Exceptions are built into the Haskell runtime. Proper handling is
+essential.
+
+FIXME: need to consolidate the material below
+
+* [Exceptions Best Practices](https://www.fpcomplete.com/blog/2016/11/exceptions-best-practices-haskell)
+    * [Asynchronous Exception Handling in Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell) (deeper dive)
+
+## Testing
+
+You **must test your code**. Haskell strong types help immensely, but
+they are _not_ a replacement for testing. Fortunately, Haskell has
+great testing libraries and tools.
+
+* [The hspec test framework](/library/hspec)
+* QuickCheck <!-- FIXME -->
+
+## Serialization
+
+Serialization to external binary and text-based formats.
+
+* Binary serialization <!-- FIXME -->
+* The [aeson](/library/aeson) library for JSON
+* [yaml](/library/yaml)
+* xml-conduit/html-conduit
+
+## Standard programming needs
+
+* [typed-process](/library/typed-process) for launching and interacting with subprocesses
+* [HTTP client library](/library/http-client)
+* [Web services](web-services.md)
+* [Command line argument parsing optparse-applicative](/library/optparse-applicative)
+* cryptonite
+* time
+* Random number generation
+
+## Performance
+
+Deeper understanding of Haskell performance, and how to improve it.
+
+* [Primitive Haskell](/tutorial/primitive-haskell)
+* [Profiling](profiling.md)
+* [Evaluation order and state tokens](https://wiki.haskell.org/Evaluation_order_and_state_tokens)
+
+## Streaming data
+
+* [Conduit tutorial](/library/conduit)
 
 ## General patterns
 
 This section demonstrates some common Haskell coding patterns, how
 they work, when they're useful, and possible pitfalls.
 
-* [Monad Transformers](/library/transformers)
-* unliftio
 * [Covariance, contravariance, and positive and negative position](https://www.fpcomplete.com/blog/2016/11/covariance-contravariance)
 * Continuation Passing Style
-* Builders and difference lists
-
-## Testing
-
-* QuickCheck
-* hspec, tasty, others?
-* [Hspec/doctest with Cabal as test framework](https://github.com/kazu-yamamoto/unit-test-example/blob/master/markdown/en/tutorial.md)
-
-## Serialization
-
-* store
-* binary/cereal
-* blaze-builder/bytestring-builder
-* blaze-html
-* attoparsec
-* [aeson](/library/aeson)
-* yaml
-* xml-conduit/html-conduit
-* base16-bytestring/base64-bytestring
-
-## Standard programming needs
-
-* [HTTP client library](/library/http-client)
-* [Command line argument parsing optparse-applicative](/library/optparse-applicative)
-* cryptonite
-* time
-* Random number generation (mwc-random)
-* Regular expressions with regex-applicative
-
-## System programming
-
-* [typed-process](/library/typed-process) for launching and interacting with subprocesses
-* Network and Socket I/O
-* Writing scripts (turtle, Shelly) (see [How to Script with Stack](/tutorial/stack-script))
-
-## Streaming data (conduit)
-
-* [Conduit tutorial](/library/conduit)
-
-## Concurrency and parallelism
-
-Simon Marlow's book [Parallel and Concurrent Programming in
-Haskell](http://chimera.labs.oreilly.com/books/1230000000929/index.html)
-is a highly recommended read on the subject. In addition, we have the
-following topics:
-
-* [The async package](/library/async)
-* Common concurrency patterns (e.g., the auto-update package)
-    * "Passing the baton" to control flow of execution between threads, using `MVar` for two threads, `TVar` for multiple threads
-* Concurrency patterns: worker threads, signals, blocking on TVars
-* STM: blocking semantics around mutable variables
-* resource-pool
-* handling errors (SlaveThread), restarting tasks, timeouts and other common patterns
-
-## Web programming
-
-Web programming is another topic with many different approaches. Like
-streaming data, we need an overview of the different options, and then
-a drilldown on individual approaches. For now:
-
-* [Web Application Interface](http://www.yesodweb.com/book/web-application-interface)
-* [Yesod Web Framework](http://www.yesodweb.com/book)
-
-## rio
-
-* [rio](https://github.com/commercialhaskell/rio#readme)
-
-## Advanced topics
-
-* [Primitive Haskell](/tutorial/primitive-haskell)
-* [Evaluation order and state tokens](https://wiki.haskell.org/Evaluation_order_and_state_tokens)
-* Cabal trickery for backwards compatibility: Cabal CPP macros. Paths module. Flags. How to test for windows. Defaulting macros for ghci. Flags to either use new library version or another package (bytestring-builder) and set a CPP variable.
 * [Constraint trick for instances](http://chrisdone.com/posts/haskell-constraint-trick); perhaps we can have a section for common type patterns (newtypes an obvious one, and also for example using Rank-N types to store a generic function in a data structure, versus existential types to store generic data).
-
-## Database Programming
-
-* persistent
-* esqueleto
-* opaleye
-* mysql-simple
-* postgresql-simple
-* [Haskell Relational Record](http://khibino.github.io/haskell-relational-record/)
-
-## Debugging/optimizing
-
-* hlint
-* Debugging
-* Profiling
-* Finding space leaks
-* Strictness annotations
-* Pragmas (UNPACK, INLINE, ...)
-* Heap profiling
-* Looking at GHC core
-
-## Code and project structuring
-
-As a project grows, there are many "patterns" that might save
-developer some time by just doing some restructuring work. Some tricks
-might save development time, while others help to re-compile less.
-
-* Common `Imports.hs` module
-* Multiple executables depending on common library
-
-## Application infrastructure and support
-
-As part of "commercial haskell", I think it would be great to have
-both, haskell-specific and non-specific description with examples in
-haskell for how do you manage all the standard needs for your
-application infrastructure and support. Some topics would include:
-
-* Deployment & service management
-* Monitoring and metrics (ekg, bosun)
-* Log handling techniques and the `say` package

@@ -1,4 +1,6 @@
-# Web Services
+---
+title: Web Services
+---
 
 ## Web Application Interface (WAI)
 
@@ -518,3 +520,8 @@ Problems:
 * Some request headers should _not_ be echoed (like `content-length`)
 * Reading request body while writing response body concurrently may
   not be supported by all clients or WAI handlers, caveat emptor
+
+## Additional material
+
+* [Web Application Interface](http://www.yesodweb.com/book/web-application-interface)
+* [Yesod Web Framework](http://www.yesodweb.com/book)

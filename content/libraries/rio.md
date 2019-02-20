@@ -1,4 +1,12 @@
-# rio
+---
+title: The rio standard library
+---
+
+FIXME
+
+* Cover monad-transformers.md
+* transformers library
+* unliftio
 
 Section exercise: use `stack new myproject rio` to create a new
 project. Then modify it to run `git ls-files -z` in a directory
