@@ -2,6 +2,8 @@
 title: Common Typeclasses
 ---
 
+FIXME: [Common typeclasses](https://wiki.haskell.org/Typeclassopedia)
+
 Section exercises:
 
 * Write the `foldMapM` helper function

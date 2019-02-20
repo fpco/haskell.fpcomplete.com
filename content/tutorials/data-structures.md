@@ -1,4 +1,6 @@
-# Data Structures
+---
+title: Data Structures
+---
 
 *You mean Haskell has things besides lists???*
 

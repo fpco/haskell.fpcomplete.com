@@ -1,4 +1,6 @@
-# Data types
+---
+title: Data types
+---
 
 ## Strictness annotations
 

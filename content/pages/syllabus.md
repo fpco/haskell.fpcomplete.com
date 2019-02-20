@@ -107,7 +107,7 @@ The `rio` library codifies much of our recommended best practices. It
 includes an approach to structuring applications, a standard library,
 a Prelude replacement, and more.
 
-[The `rio` library](/library/rio.md)
+[The `rio` library](/library/rio)
 
 ## Mutability and concurrency
 
@@ -116,8 +116,8 @@ overridden. And this mutability oftens pops up in the context of
 concurrency. This is one of Haskell's greatest strengths, and we'll
 cover it now.
 
-* [Mutable variables](/tutorial/mutable-variables.md)
-* [The async library](/library/async.md)
+* [Mutable variables](/tutorial/mutable-variables)
+* [The async library](/library/async)
 
 ## Strictness, laziness, and evaluation
 
@@ -125,8 +125,8 @@ One of the hallmarks of Haskell is lazy evaluation. Understanding how
 this works, when to use strictness, and how to avoid space leaks are
 vital to production quality Haskell code.
 
-* [Data types](data-types.md)
-* [All About Strictness](/tutorial/all-about-strictness.md)
+* [Data types](/tutorial/data-types)
+* [All About Strictness](/tutorial/all-about-strictness)
 
 ## Data structures
 
@@ -135,10 +135,10 @@ overused. It's vital to understand other common data structures. This
 section intentionally comes after the strictness section, as the
 former is a prerequisite for this material.
 
-* [Data Structures](data-structures.md)
-* [String Types](string-types.md)
-* [Containers](containers.md)
-* [Vector](vector.md)
+* [Data Structures](/tutorial/data-structures)
+* [String Types](/tutorial/string-types)
+* [Containers](/library/containers)
+* [Vector](/library/vector)
 * Builders and difference lists
 * Let's revisit that data structure quiz...
 
@@ -174,7 +174,7 @@ Serialization to external binary and text-based formats.
 
 * [typed-process](/library/typed-process) for launching and interacting with subprocesses
 * [HTTP client library](/library/http-client)
-* [Web services](web-services.md)
+* [Web services](/tutorial/web-services)
 * [Command line argument parsing optparse-applicative](/library/optparse-applicative)
 * cryptonite
 * time
@@ -185,7 +185,7 @@ Serialization to external binary and text-based formats.
 Deeper understanding of Haskell performance, and how to improve it.
 
 * [Primitive Haskell](/tutorial/primitive-haskell)
-* [Profiling](profiling.md)
+* [Profiling](/tutorial/profiling)
 * [Evaluation order and state tokens](https://wiki.haskell.org/Evaluation_order_and_state_tokens)
 
 ## Streaming data

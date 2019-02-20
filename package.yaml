@@ -103,6 +103,7 @@ tests:
     # Dependencies of snippets we test
     - microlens-platform
     - foldl
+    - wai-conduit
 
 # Define flags used by "yesod devel" to make compilation faster
 flags:

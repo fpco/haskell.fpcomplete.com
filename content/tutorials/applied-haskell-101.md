@@ -10,8 +10,7 @@ FIXME need to make this page make sense.
 * [Operator Glossary](/tutorial/operators)
 * [Synonyms in base](/tutorial/synonyms)
 * [Common language extensions](https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/guide-to-ghc-extensions)
-* [Common typeclasses](common-typeclasses.md)
-* [Common typeclasses](https://wiki.haskell.org/Typeclassopedia)
+* [Common typeclasses](/tutorial/common-typeclasses)
 * hlint
 * Hoogle
 * stylish-haskell/hindent
@@ -51,7 +50,8 @@ FIXME need to make this page make sense.
     * Try to tie the information I'm presenting to the exercise!
 * Mini exercises throughout
 * Bonus challenges to try out on your own later
-# Haskell 101
+
+## Haskell 101
 
 Quick review of Haskell, and try to solidify naming we'll use for this
 course.
