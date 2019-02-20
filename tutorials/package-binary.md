@@ -1,4 +1,6 @@
-# Serializing data---the binary library
+---
+title: Serializing data---the binary library
+---
 
 *binary* is straightforward to use library for decoding (parsing)
 and encoding binary data. There are a number of ways to work with

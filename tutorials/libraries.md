@@ -1,4 +1,6 @@
-# Recommended Haskell libraries
+---
+title: Recommended Haskell libraries
+---
 
 We recommend using
 [`rio`](https://github.com/commercialhaskell/rio#readme) as a standard

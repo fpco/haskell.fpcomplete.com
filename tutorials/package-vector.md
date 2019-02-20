@@ -1,4 +1,6 @@
-# Efficient Packed-Memory Data Representations
+---
+title: Efficient Packed-Memory Data Representations
+---
 
 The de facto standard package in the Haskell ecosystem for integer-indexed
 array data is the [vector package](http://www.stackage.org/package/vector).

@@ -1,4 +1,6 @@
-# Asynchronous and Concurrent Programming
+---
+title: Asynchronous and Concurrent Programming
+---
 
 The [async package](https://www.stackage.org/package/async) provides
 functionality for performing actions asynchronously, across multiple threads.

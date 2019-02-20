@@ -1,4 +1,6 @@
-# Software Transactional Memory
+---
+title: Software Transactional Memory
+---
 
 Software Transactional Memory, or STM, is a technique for storing mutable
 variables in Haskell. Unlike other mutable variables in Haskell, or mutable

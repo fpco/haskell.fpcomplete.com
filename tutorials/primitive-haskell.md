@@ -1,4 +1,6 @@
-# Primitive Haskell
+---
+title: Primitive Haskell
+---
 
 The point of this chapter is to help you peel back some of the layers of
 abstraction in Haskell coding, with the goal of understanding things like

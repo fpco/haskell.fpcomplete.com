@@ -1,4 +1,6 @@
-# Operator Glossary
+---
+title: Operator Glossary
+---
 
 One aspect of Haskell that many new users find difficult to get a
 handle on is _operators_. Unlike many other languages, Haskell gives a

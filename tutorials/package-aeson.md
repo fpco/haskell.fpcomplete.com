@@ -1,4 +1,6 @@
-# Working with JSON data
+---
+title: Working with JSON data
+---
 
 aeson is an efficient and easy to use library for decoding (parsing) and
 encoding JSON. The ways to work with aeson ranges from simple (but inflexible)

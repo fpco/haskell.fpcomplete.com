@@ -48,7 +48,7 @@ $doctype 5
                 <a href=#{editLink}>Edit this page
             $if not pageSkipH1
               <h1 id="page-title">#{pageTitle}
-            #{pageBody}
+            #{pageBody'}
 
     <div class="container-fluid fp-footer">
       <div class="container">

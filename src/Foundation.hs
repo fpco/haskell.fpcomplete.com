@@ -42,26 +42,17 @@ instance Yesod App where
               , pageDescription = Nothing
               , pageAuthor = Nothing
               , pageHead = Y.pageHead pc render
-              , pageBody = Y.pageBody pc render
+              , pageBody = pure $ Y.pageBody pc render
               , pageSkipH1 = True
               , pageEditLink = Nothing
               }
 
-data Page = Page
-  { pageTitle :: !Html
-  , pageDescription :: !(Maybe Text)
-  , pageAuthor :: !(Maybe Text)
-  , pageHead :: !Html
-  , pageBody :: !Html
-  , pageSkipH1 :: !Bool
-  , pageEditLink :: !(Maybe Text)
-  }
-
-displayPage :: Page -> Handler Html
+displayPage :: PageHtml -> Handler Html
 displayPage Page {..} = do
   (fromInteger -> year, _, _) <- (toGregorian . utctDay) <$> liftIO getCurrentTime
   let firstYear = 2019 :: Int
       copyrightYears
         | year == firstYear = toHtml year
         | otherwise = toHtml firstYear <> "—" <> toHtml year
+  pageBody' <- liftIO pageBody
   withUrlRenderer $(hamletFile "templates/default-layout.hamlet")

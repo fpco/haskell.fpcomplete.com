@@ -1,4 +1,6 @@
-# Command line options parsing
+---
+title: Command line options parsing
+---
 
 With optparse-applicative, you declare your program's options in one place, and
 get nicely formatted `--help` text and bash auto-completion for free.

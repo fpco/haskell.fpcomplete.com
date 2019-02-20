@@ -8,7 +8,6 @@ module Handler.Docs
   ) where
 
 import Import
-import qualified Data.Map.Strict as Map
 
 getLearnR :: Handler Html
 getLearnR = do
@@ -92,33 +91,26 @@ getLearnR = do
             \.
           <p>The following is a list of all library tutorials provided on this site.
           <ul>
-            $forall (name, doc) <- mapToList $ docsLibraries docs
+            $forall (name, page) <- mapToList $ docsLibraries docs
               <li>
-                <a href=@{LibraryR name}>#{docTitle doc}
+                <a href=@{LibraryR name}>#{pageTitle page}
 
         <div .col-lg-6>
           <h2 #tutorials>Tutorials
           <p>We have the following general tutorials and guides on this site, separate from library-specific documentation.
           <ul>
-            $forall (name, doc) <- mapToList $ docsTutorials docs
+            $forall (name, page) <- mapToList $ docsTutorials docs
               <li>
-                <a href=@{TutorialR name}>#{docTitle doc}
+                <a href=@{TutorialR name}>#{pageTitle page}
     |]
 
 getTutorialR :: Text -> Handler Html
-getTutorialR = helper docsTutorials
+getTutorialR = docHelper docsTutorials
 
 getLibraryR :: Text -> Handler Html
-getLibraryR = helper docsLibraries
+getLibraryR = docHelper docsLibraries
 
-helper :: (Docs -> Map Text Doc) -> Text -> Handler Html
-helper getter name = do
-  docs <- getDocs
-  doc <- maybe notFound pure
-       $ Map.lookup name
-       $ getter docs
-  defaultLayout $ do
-    setTitle $ docTitle doc
+    {- FIXME
     [whamlet|
       <p>
         <a href=@{LearnR}>Return to Learn
@@ -126,4 +118,4 @@ helper getter name = do
           |
           <a href=#{edit}>Edit on Github
     |]
-    toWidget $ docBody doc
+    -}

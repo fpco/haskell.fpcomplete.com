@@ -45,10 +45,9 @@ dependencies:
 - foreign-store
 - cmark-gfm
 - filepath
-- html-conduit
-- xml-conduit
 - yesod-gitrev
 - yesod-sitemap
+- auto-update
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.

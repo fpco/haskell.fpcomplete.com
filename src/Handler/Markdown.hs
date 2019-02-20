@@ -1,7 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- | All of the simple Markdown routes
 module Handler.Markdown where
 
 import Import
+
+displayMarkdown :: Text -> Handler Html
+displayMarkdown = docHelper docsPages
 
 getHomeR :: Handler Html
 getHomeR = displayMarkdown "home"

@@ -1,4 +1,6 @@
-# Exception Safety
+---
+title: Exception Safety
+---
 
 This tutorial covers a relatively broad and previously underdocumented
 topic in the Haskell ecosystem. In particular, goals of this tutorial

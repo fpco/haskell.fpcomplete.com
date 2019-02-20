@@ -1,4 +1,6 @@
-# Containers
+---
+title: Containers
+---
 
 In order to solve almost any problem, that requires manipulation of data, the
 very first question should be: What is the most suitable data structure that we

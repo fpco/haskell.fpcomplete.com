@@ -1,4 +1,6 @@
-# How to Script with Stack
+---
+title: How to Script with Stack
+---
 
 This tutorial assumes you've already installed the Stack build
 tool. If you haven't yet, please start with the

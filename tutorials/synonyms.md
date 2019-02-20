@@ -1,4 +1,6 @@
-# Synonyms in base
+---
+title: Synonyms in base
+---
 
 There are a number of cases in the `base` package where the same
 functionality exists under two different names. This can occur for a

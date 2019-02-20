@@ -1,4 +1,6 @@
-# Monad transformers
+---
+title: Monad transformers
+---
 
 The [transformers](https://www.stackage.org/package/transformers) package provides
 useful control flow extensions for monad stacks.

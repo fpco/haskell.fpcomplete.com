@@ -1,4 +1,6 @@
-# String Types
+---
+title: String Types
+---
 
 The two primary packages for dealing with string-like data in Haskell
 are bytestring and text. The former is for working with binary data,
