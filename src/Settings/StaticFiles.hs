@@ -22,6 +22,7 @@ staticFilesList (appStaticDir compileTimeAppSettings)
   [ "img/logo.png"
   , "img/fplogo.svg"
   , "css/style.css"
+  , "js/script.js"
   , "img/favicon.png"
   , "img/apple-logo.svg"
   , "img/windows-logo.svg"

@@ -20,6 +20,12 @@ import qualified Data.ByteString.Char8 as B8
 import Data.Text.Encoding (decodeUtf8')
 import Data.Yaml
 import Control.AutoUpdate
+import Text.XML (Document (..), Node (..), Element (..))
+import Text.XML.Cursor
+import Text.HTML.DOM (parseSTChunks)
+import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
+import qualified Data.Text as T
 
 data Page body = Page
   { pageTitle :: !Html
@@ -86,7 +92,7 @@ toDocMap addLibraryName fp = liftIO $
 renderMarkdown :: ByteString -> IO Html
 renderMarkdown bodyBS = do
   bodyText <- either throwIO pure $ decodeUtf8' bodyBS
-  pure $ preEscapedToHtml $ commonmarkToHtml
+  pure $ addPermalinks $ commonmarkToHtml
     [ optSmart
     , optUnsafe
     ]
@@ -95,6 +101,34 @@ renderMarkdown bodyBS = do
     , extAutolink
     ]
     bodyText
+
+addPermalinks :: Text -> Html
+addPermalinks orig =
+  case parseSTChunks [orig] of
+    Document _ root _ ->
+      case root of
+        Element "html" _ nodes -> foldMap (toHtml . goNode) nodes
+        _ -> toHtml $ goElem root
+  where
+    goElem (Element name attrs nodes) =
+      Element name (addId name attrs nodes) $ map goNode nodes
+
+    goNode (NodeElement e) = NodeElement $ goElem e
+    goNode n = n
+
+    isHeading name = name `Set.member` Set.fromList ["h1", "h2", "h3", "h4", "h5", "h6"]
+    addId name attrs nodes
+      | isHeading name && "id" `Map.notMember` attrs =
+          let id' = slugify $ mconcat $ fromNode (NodeElement $ Element name attrs nodes) $// content
+           in Map.insert "id" id' attrs
+      | otherwise = attrs
+
+    slugify = T.intercalate "-" . T.words . T.map toSpace . T.toLower
+
+    toSpace c
+      | 'a' <= c && c <= 'z' = c
+      | '0' <= c && c <= '9' = c
+      | otherwise = c
 
 getMarkdownDoc :: FilePath -> IO PageHtml
 getMarkdownDoc fp = handleAny onErr $ do
@@ -139,27 +173,6 @@ getYamlDoc fp = handleAny onErr $ do
   pure page0
     { pageBody = getter
     }
-      -- htmlText <- parseRequestThrow url >>= httpBS >>= renderMarkdown
-    {-
-  text <- readFileUtf8 fp
-  case T.lines text of
-    [title, url] -> do
-      req <- parseRequest $ T.unpack url
-      markdownText <- fmap mconcat $ httpSink req $ const $ decodeUtf8C .| sinkList
-      let htmlText = commonmarkToHtml
-            [optSmart, optUnsafe]
-            [extStrikethrough, extTable, extAutolink]
-            markdownText
-      pure Doc
-        { docTitle = toHtml title
-        , docBody =
-            case extractH1 htmlText of
-              [] -> h1 (toHtml title) <> preEscapedToHtml htmlText
-              _ -> preEscapedToHtml htmlText
-        , docEditLink = Nothing
-        }
-    _ -> error $ "Malformed file: " ++ show fp
-    -}
   where
     onErr :: SomeException -> IO a
     onErr e = error $ concat
