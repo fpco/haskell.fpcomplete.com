@@ -60,34 +60,27 @@ data Docs = Docs
 
 loadDocs :: IO Docs
 loadDocs = Docs
-  <$> loadDir True "libraries"
-  <*> loadDir False "tutorials"
-  <*> loadDir False "pages"
+  <$> loadDir "libraries"
+  <*> loadDir "tutorials"
+  <*> loadDir "pages"
   where
-    loadDir addLibraryName subdir =
+    loadDir subdir =
       runConduitRes $
       sourceDirectoryDeep True ("content" </> subdir) .|
-      foldMapMC (toDocMap addLibraryName)
+      foldMapMC toDocMap
 
 toDocMap
   :: MonadIO m
-  => Bool
-  -> FilePath
+  => FilePath
   -> m (Map Text PageHtml)
-toDocMap addLibraryName fp = liftIO $
+toDocMap fp = liftIO $
   case splitExtension $ takeFileName fp of
     (name, ".md") -> byName name <$> getMarkdownDoc fp
     (name, ".yaml") -> byName name <$> getYamlDoc fp
     _ -> pure mempty
   where
     byName :: String -> PageHtml -> Map Text PageHtml
-    byName name page = singletonMap (fromString name) $ addLibraryName' name page
-
-    addLibraryName' name page
-      | addLibraryName =
-          let title = pageTitle page <> " - the " <> toHtml name <> " library"
-           in page { pageTitle = title }
-      | otherwise = page
+    byName name page = singletonMap (fromString name) page
 
 renderMarkdown :: ByteString -> IO Html
 renderMarkdown bodyBS = do

@@ -1,5 +1,5 @@
 ---
-title: Serializing data---the binary library
+title: Serializing data
 ---
 
 *binary* is straightforward to use library for decoding (parsing)

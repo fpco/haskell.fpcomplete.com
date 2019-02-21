@@ -5,7 +5,7 @@ module Handler.Markdown where
 import Import
 
 displayMarkdown :: Text -> Handler Html
-displayMarkdown = docHelper docsPages
+displayMarkdown = docHelper docsPages (\_ _ -> mempty)
 
 getHomeR :: Handler Html
 getHomeR = displayMarkdown "home"
