@@ -394,6 +394,100 @@ instance PrimMonad (ReaderIO r) where
 __Exercise__: Modify the `ReaderIO` monad to instead be a `ReaderST` monad, and
 take an `s` parameter for the specific state token.
 
+## More exercises:
+
+* Rewrite `return` and `>>=` for `IO` with unboxed functions.
+* Rewrite `runST`. You'll need [`runRW#`](https://www.stackage.org/haddock/lts-12.21/ghc-prim-0.5.1.1/GHC-Magic.html#v:runRW-35-)
+in `GHC.Magic`.
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE MagicHash #-}
+{-# LANGUAGE UnboxedTuples #-}
+{-# LANGUAGE RankNTypes #-}
+import GHC.Prim
+import GHC.Types
+import GHC.ST
+import GHC.Magic
+
+runIO :: IO a -> State# RealWorld -> (# State# RealWorld, a #)
+runIO (IO f) s = f s
+
+returnIO :: a -> IO a
+returnIO x = IO $ \s -> (# s, x #)
+
+bindIO :: IO a -> (a -> IO b) -> IO b
+bindIO (IO ioa) f = IO $ \s0 ->
+  case ioa s0 of
+    (# s1, a #) -> runIO (f a) s1
+
+runST :: (forall s. ST s a) -> a
+runST (ST f) =
+  case runRW# f of
+    (# _ignoredState, x #) -> x
+
+main :: IO ()
+main = pure ()
+```
+
+Implement a scaled down version of `ST` with a `Monad` instance and
+the following signature:
+
+```haskell
+newtype ST s a
+runST :: (forall s. ST s a) -> a
+unsafeToST :: IO a -> ST s a
+```
+
+Solution:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE MagicHash #-}
+{-# LANGUAGE UnboxedTuples #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DeriveFunctor #-}
+import GHC.Prim
+import GHC.Magic
+import GHC.Types
+
+newtype ST s a = ST (State# s -> (# State# s, a #))
+  deriving Functor
+
+instance Applicative (ST s) where
+  pure x = ST (\s -> (# s, x #))
+  ST f <*> ST x = ST $ \s0 ->
+    case f s0 of
+      (# s1, f' #) ->
+        case x s1 of
+          (# s2, x' #) -> (# s2, f' x' #)
+
+instance Monad (ST s) where
+  return = pure
+  ST x >>= f = ST $ \s0 ->
+    case x s0 of
+      (# s1, x' #) ->
+        case f x' of
+          ST f' -> f' s1
+
+runST :: (forall s. ST s a) -> a
+runST (ST f) =
+  case runRW# f of
+    (# _s, x #) -> x
+
+unsafeToST :: IO a -> ST s a
+unsafeToST (IO f) = ST (unsafeCoerce# f)
+
+main :: IO ()
+main = print $! runST $ do
+  unsafeToST $ putStrLn "Enter your name"
+  unsafeToST getLine
+```
+
+__Challenge question__ Why is `$!` necessary?
+
 ## Further reading
 
 * [GHC docs on primitives](https://downloads.haskell.org/~ghc/7.8.3/docs/html/users_guide/primitives.html)
