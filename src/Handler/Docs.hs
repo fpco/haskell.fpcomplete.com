@@ -88,10 +88,12 @@ getLearnR = do
         <a href="https://www.stackage.org/lts">browse libraries available on Stackage#
         \.
       <p>The following is a list of all library tutorials provided on this site.
-      <ul>
+      <dl>
         $forall (name, page) <- mapToList $ docsLibraries docs
-          <li>
-            <a href=@{LibraryR name}>#{pageTitle page}
+          <dt>
+            <a href=@{LibraryR name}>
+              <b>#{name}
+          <dd>#{pageTitle page}
 
       <h2 #tutorials>Tutorials
       <p>We have the following general tutorials and guides on this site, separate from library-specific documentation.
@@ -102,17 +104,13 @@ getLearnR = do
     |]
 
 getTutorialR :: Text -> Handler Html
-getTutorialR = docHelper docsTutorials
+getTutorialR = docHelper docsTutorials (\_ _ -> mempty)
 
 getLibraryR :: Text -> Handler Html
-getLibraryR = docHelper docsLibraries
-
-    {- FIXME
-    [whamlet|
-      <p>
-        <a href=@{LearnR}>Return to Learn
-        $maybe edit <- docEditLink doc
-          |
-          <a href=#{edit}>Edit on Github
-    |]
-    -}
+getLibraryR = docHelper docsLibraries $ \name _ ->
+  [shamlet|
+    <p .lead>
+      The
+      <a href="https://www.stackage.org/package/#{name}">#{name}
+      library
+  |]
