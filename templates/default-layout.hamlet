@@ -92,6 +92,7 @@ $doctype 5
                 <li>
                   <a href=@{ContributeR}>Contribute
 
+    <script src=@{StaticR js_script_js}>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/haskell.min.js">
     <script>hljs.initHighlightingOnLoad();

@@ -48,6 +48,8 @@ dependencies:
 - yesod-gitrev
 - yesod-sitemap
 - auto-update
+- html-conduit
+- xml-conduit
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.
