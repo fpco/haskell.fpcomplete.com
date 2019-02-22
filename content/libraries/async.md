@@ -17,6 +17,13 @@ While it's built on top of the `forkIO` function from base (in
   well as the `Concurrently` newtype wrapper, can give you a huge bang for your
   buck.
 
+## Tutorial exercise
+
+To help motivate learning, keep in mind this exercise while reading
+through the content below, and try to implement a solution. Write a
+helper function which allows you to pass actions to worker threads,
+and which properly handles exceptions for all of these actions.
+
 ## Concepts
 
 There is little cognitive overhead to using this package. The primary datatype
@@ -44,7 +51,7 @@ you can get away with `concurrently`/`race`/`Concurrently`, you should.
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent
 import Control.Concurrent.Async
 
@@ -70,7 +77,7 @@ function returns only the first one to complete:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent
 import Control.Concurrent.Async
 
@@ -99,7 +106,7 @@ verbose:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Applicative
 import Control.Concurrent
 import Control.Concurrent.Async
@@ -132,7 +139,7 @@ great for larger scale cases, such as when we want to discard some results.
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent.Async
 import Data.Foldable (traverse_)
 
@@ -170,7 +177,7 @@ other thread:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Exception
@@ -208,7 +215,7 @@ thread to continue running as long as the main thread is in operation:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Exception
@@ -268,7 +275,7 @@ the monadic state to make this work.
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 {-# LANGUAGE FlexibleContexts #-}
 import Control.Concurrent
 import Control.Concurrent.Async
@@ -351,7 +358,7 @@ surprising things worth pointing out right off the bat:
    async exception. If your action misbehaves with async exceptions,
    canceling may fail. We'll demonstrate that below, but I recommend
    checking out the
-   [safe-exceptions tutorial](/library/safe-exceptions)
+   [safe-exceptions tutorial](https://haskell-lang.org/library/safe-exceptions)
    for advice on doing this right.
 
 But before we can get into details, let's just see the launching of
@@ -361,7 +368,7 @@ some basic `Async`s.
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
 import Control.Monad
@@ -449,7 +456,7 @@ pretty familiar:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
 import Control.Concurrent.STM
@@ -495,7 +502,7 @@ to do more sophisticated queries, like racing two `Async`s:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Applicative ((<|>))
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
@@ -538,7 +545,7 @@ Look at how easy it is to break our program completely:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
 import Control.Exception
@@ -559,7 +566,7 @@ caught by the `try` and execution continues indefinitely. This is
 _very bad code_, don't do this!
 
 __Exercise__ Switch the import from `Control.Exception` to
-`Control.Exception.Safe`. What happens? Why?
+`UnliftIO.Exception`. What happens? Why?
 
 ### Linking
 
@@ -575,7 +582,7 @@ the main thread.
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 {-# LANGUAGE OverloadedStrings #-}
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
@@ -629,7 +636,7 @@ example from above to use a `ReaderT` and see how that goes:
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 {-# LANGUAGE OverloadedStrings #-}
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async
@@ -723,3 +730,41 @@ Using `UnliftIO.Async` as a drop in replacement for
 `Control.Concurrent.Async` is straightforward, the only API change to
 be aware of is that the `Async` data type will take an extra type
 paramter for the underlying monad.
+
+## Section exercise
+
+Write a helper function which allows you to pass actions to worker
+threads, and which properly handles exceptions for all of these
+actions. You'll want to use closable queues from `stm-chans`. Imagine
+how you'd allow parallelizing a loop that looks like:
+
+```haskell
+myLoop = do
+  mnext <- getNextItem
+  case mnext of
+    Nothing -> pure ()
+    Just next -> do
+      handleItem next -- want to do this in a worker
+      myLoop
+```
+
+If you just use `async` or `forkIO`:
+
+* You'll get unbounded worker threads created
+* You'll incur the overhead of forking for each item
+* You won't have any handling of exceptions
+
+Hint: consider a helper function like:
+
+```haskell
+type PerformInWorker = ... -- what should this type be?
+
+withWorkers
+  :: Int -- ^ worker count
+  -> (PerformInWorker -> IO a)
+  -> IO a
+```
+
+Bonus:
+
+* Generalize to `MonadUnliftIO`
