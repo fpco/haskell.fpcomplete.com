@@ -2,6 +2,9 @@
 title: Asynchronous and Concurrent Programming
 ---
 
+__FIXME__ This module needs to be updated to discuss the
+`UnliftIO.Async` module instead of `async` itself.
+
 The [async package](https://www.stackage.org/package/async) provides
 functionality for performing actions asynchronously, across multiple threads.
 While it's built on top of the `forkIO` function from base (in

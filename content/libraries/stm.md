@@ -2,6 +2,9 @@
 title: Software Transactional Memory
 ---
 
+__FIXME__ This module needs to be updated to discuss the
+`UnliftIO.Async` module instead of `async` itself.
+
 Software Transactional Memory, or STM, is a technique for storing mutable
 variables in Haskell. Unlike other mutable variables in Haskell, or mutable
 variables in most languages, it provides transactional capabilities. This is

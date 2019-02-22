@@ -1,6 +1,15 @@
 ---
-title: Exception Safety
+title: Safe exception handling
 ---
+
+__FIXME__ This needs to be updated to consolidate lots of content. In particular, I need to ensure we get all of the relevant content from:
+
+* https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell
+* https://github.com/fpco/safe-exceptions/#readme
+
+Previous content below, still needs to be updated.
+
+* * *
 
 This tutorial covers a relatively broad and previously underdocumented
 topic in the Haskell ecosystem. In particular, goals of this tutorial
