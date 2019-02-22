@@ -1,5 +1,7 @@
 # FP Complete's Haskell Homepage
 
+[![Build Status](https://travis-ci.org/fpco/haskell.fpcomplete.com.svg?branch=master)](https://travis-ci.org/fpco/haskell.fpcomplete.com)
+
 This repository contains the code and content for [FP Complete's
 Haskell Homepage](https://haskell.fpcomplete.com/). Unless otherwise
 marked, content is copyright FP Complete under the [Creative Commons
