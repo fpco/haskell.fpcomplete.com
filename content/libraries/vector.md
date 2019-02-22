@@ -13,6 +13,14 @@ different modules can be daunting. This article will start off with an overview
 of terminology to guide you, and then step through a number of concrete
 examples of using the package.
 
+## Tutorial exercise
+
+To help motivate learning, keep in mind this exercise while reading
+through the content below, and try to implement a solution. Use
+mutable vectors to write a program that will deal you a random hand of
+poker. Bonus: use an unboxed vector. Double bonus: minimize the memory
+representation.
+
 ## Example
 
 Since we're about to jump into a few sections of descriptive text, let's kick
@@ -24,6 +32,8 @@ Note that this example is purposely written in a very generic form. We'll build
 up to handling this form throughout this article.
 
 ```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE FlexibleContexts #-}
 import           Control.Monad.Primitive     (PrimMonad, PrimState)
 import qualified Data.ByteString.Lazy        as L
@@ -102,6 +112,10 @@ vector itself defines three flavors: boxed
 `Data.Vector.Unboxed.Mutable`). (There's also technically primitive vectors,
 but in practice you should always prefer unboxed vectors; see the module
 documentation for more information on the distinction here.)
+
+All vectors a *spine strict*. Boxed vectors are value lazy, while
+storable and unboxed vectors are also value strict. We'll cover these
+points with examples below.
 
 And our final point: in addition to having these three flavors, the vector
 package provides a typeclass-based interface which allows you to write code
@@ -219,6 +233,8 @@ Enough talk! Let's start using vector. Assuming you're familiar with the list
 API, this should look rather boring.
 
 ```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
 import qualified Data.Vector as V
 
 main :: IO ()
@@ -274,6 +290,8 @@ count the frequency of each result, and then print how often each value
 appeared. Let's first implement this using immutable vectors:
 
 ```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
 import           Data.Vector.Unboxed ((!), (//))
 import qualified Data.Vector.Unboxed as V
 import           System.Random       (randomRIO)
@@ -304,6 +322,8 @@ increment a piece of memory. Let's rewrite this to use a mutable, unboxed
 vector:
 
 ```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
 import           Control.Monad               (replicateM_)
 import           Data.Vector.Unboxed         (freeze)
 import qualified Data.Vector.Unboxed.Mutable as V
@@ -374,6 +394,8 @@ Why not just freeze it in place? Two reasons, actually:
 1.  It has the potential to break referential transparency. Consider this code:
 
     ```haskell
+    #!/usr/bin/env stack
+    -- stack --resolve lts-12.21 script
     import           Data.Vector.Unboxed         (freeze)
     import qualified Data.Vector.Unboxed.Mutable as V
 
@@ -547,6 +569,27 @@ stream.hs:28:13:
       print $ shuffle gen $ V.enumFromTo 1 (20 :: Int)
 ```
 
+As an example:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE FlexibleContexts #-}
+import qualified Data.Vector as VB
+import qualified Data.Vector.Storable as VS
+import qualified Data.Vector.Unboxed as VU
+import qualified Data.Vector.Generic as V
+
+myFunc :: V.Vector v Int => v Int -> IO ()
+myFunc = V.mapM_ print . V.map (* 2) . V.filter odd
+
+main :: IO ()
+main = do
+  myFunc $ VB.enumFromTo 1 10
+  myFunc $ VS.enumFromTo 1 10
+  myFunc $ VU.enumFromTo 1 10
+```
+
 ## vector-algorithms
 
 A package of note is
@@ -573,7 +616,7 @@ main = do
 
 ## mwc-random
 
-One final library to mention now is mwc-random, a random number generation
+Another library to mention now is mwc-random, a random number generation
 library built on top of vector and primitive. Its API can be a bit daunting
 initially, but given your newfound understanding of the vector package, the API
 might make a lot more sense now. It provides a `Gen s` type, where `s` is some
@@ -584,6 +627,8 @@ As a final example, here's how we can shuffle the numbers 1-20 using
 mwc-random.
 
 ```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
 import           Control.Monad.ST            (ST)
 import qualified Data.Vector.Unboxed         as V
 import qualified Data.Vector.Unboxed.Mutable as M
@@ -610,3 +655,247 @@ main = do
         V.unsafeFreeze vector
     print vector
 ```
+
+## Strictness
+
+Guess the output:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE FlexibleContexts #-}
+import qualified Data.Vector as VB
+import qualified Data.Vector.Storable as VS
+import qualified Data.Vector.Unboxed as VU
+import UnliftIO.Exception (pureTry)
+
+main :: IO ()
+main = do
+  print $ pureTry $ VB.head $ VB.fromList (():undefined)
+  print $ pureTry $ VS.head $ VS.fromList (():undefined)
+  print $ pureTry $ VU.head $ VU.fromList (():undefined)
+
+  print $ pureTry $ VB.head $ VB.fromList [(), undefined]
+  print $ pureTry $ VS.head $ VS.fromList [(), undefined]
+  print $ pureTry $ VU.head $ VU.fromList [(), undefined]
+```
+
+* Boxed: spine strict
+* Storable and unboxed: value strict
+
+__Question__ Why does this difference exist?
+
+## vector-algorithms
+
+__Exercise__ Fill a vector with 100 random integers between 1 and
+10000 and sort it. Use vector-algorithms.
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+import qualified Data.Vector.Unboxed as V
+import Data.Vector.Algorithms.Insertion (sort)
+import System.Random (randomRIO)
+
+main :: IO ()
+main = do
+  v <- V.replicateM 100 $ randomRIO (1, 10000 :: Int)
+  print $ V.modify sort v
+```
+
+Or
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+import qualified Data.Vector.Unboxed as V
+import qualified Data.Vector.Unboxed.Mutable as VM
+import Data.Vector.Algorithms.Insertion (sort)
+import System.Random
+
+main :: IO ()
+main = do
+  gen0 <- getStdGen
+  print $ V.create $ do
+    mv <- VM.new 100
+    let loop gen idx
+          | idx >= 100 = return ()
+          | otherwise = do
+              let (x, gen') = randomR (1, 10000) gen
+              VM.write mv idx (x :: Int)
+              loop gen' (idx + 1)
+    loop gen0 0
+    sort mv
+    return mv
+```
+
+Or
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+import qualified Data.Vector.Unboxed as V
+import qualified Data.Vector.Unboxed.Mutable as VM
+import Data.Vector.Algorithms.Insertion (sort)
+import System.Random
+import Data.Foldable (forM_)
+
+main :: IO ()
+main = do
+  mv <- VM.new 100
+  forM_ [0..99] $ \idx -> do
+    x <- randomRIO (1, 10000)
+    VM.write mv idx (x :: Int)
+  sort mv
+  v <- V.unsafeFreeze mv
+  print v
+```
+
+## Recommendations
+
+There's some confusion about which data structure to use among the
+different kinds of vectors and lists. I typically advise using vectors
+over list. If so, why are lists so ubiquitous?
+
+* The Prelude encourages them
+* They're in base
+* There's built-in syntax for them
+* Sometimes they _are_ better than vectors, such as using them as a
+  control structure instead of for data storage
+
+Here's a checklist I follow for choosing a data structure:
+
+* Unless you have a good reason to do otherwise: use an immutable structure
+* If unboxed is possible, use it
+* Otherwise, if storable is possible, use it
+* Otherwise, use boxed
+* Generic algorithm? Use `Generic`
+* Polymorphic container? Stick with boxed
+
+## Exercises
+
+Test the randomness of `System.Random`: use `randomRIO (0, 9)`
+repeatedly to generate a random values and see if the distribution is
+close to uniform. First use immutable vectors:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+import           Data.Vector.Unboxed ((!), (//))
+import qualified Data.Vector.Unboxed as V
+import           System.Random       (randomRIO)
+
+main :: IO ()
+main = do
+    let v0 = V.replicate 10 (0 :: Int)
+
+        loop v 0 = return v
+        loop v rest = do
+            i <- randomRIO (0, 9)
+            let oldCount = v ! i
+                v' = v // [(i, oldCount + 1)]
+            loop v' (rest - 1)
+
+    vector <- loop v0 (10^6)
+    print vector
+```
+
+__Question__ Is this efficient?
+
+Now use mutable vectors:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+import           Control.Monad               (replicateM_)
+import           Data.Vector.Unboxed         (freeze)
+import qualified Data.Vector.Unboxed.Mutable as V
+import           System.Random               (randomRIO)
+
+main :: IO ()
+main = do
+    vector <- V.replicate 10 (0 :: Int)
+
+    replicateM_ (10^6) $ do
+        i <- randomRIO (0, 9)
+        oldCount <- V.read vector i
+        V.write vector i (oldCount + 1)
+
+    ivector <- freeze vector
+    print ivector
+```
+
+Calculate the frequency of each byte (0-255) for the content coming
+from standard input.
+
+```haskell
+{-# LANGUAGE FlexibleContexts #-}
+import           Control.Monad.Primitive     (PrimMonad, PrimState)
+import qualified Data.ByteString.Lazy        as L
+import qualified Data.Vector.Generic.Mutable as M
+import qualified Data.Vector.Unboxed         as U
+import           Data.Word                   (Word8)
+
+main :: IO ()
+main = do
+    -- Get all of the contents from stdin
+    lbs <- L.getContents
+
+    -- Create a new 256-size mutable vector
+    -- Fill the vector with zeros
+    mutable <- M.replicate 256 0
+
+    -- Add all of the bytes from stdin
+    addBytes mutable lbs
+
+    -- Freeze to get an immutable version
+    vector <- U.unsafeFreeze mutable
+
+    -- Print the frequency of each byte
+    -- In newer vectors: we can use imapM_
+    U.zipWithM_ printFreq (U.enumFromTo 0 255) vector
+
+addBytes :: (PrimMonad m, M.MVector v Int)
+         => v (PrimState m) Int
+         -> L.ByteString
+         -> m ()
+addBytes v lbs = mapM_ (addByte v) (L.unpack lbs)
+
+addByte :: (PrimMonad m, M.MVector v Int)
+        => v (PrimState m) Int
+        -> Word8
+        -> m ()
+addByte v w = do
+    -- Read out the old count value
+    oldCount <- M.read v index
+    -- Write back the updated count value
+    M.write v index (oldCount + 1)
+  where
+    -- Indices in vectors are always Ints. Our bytes come in as Word8, so we
+    -- need to convert them.
+    index :: Int
+    index = fromIntegral w
+
+printFreq :: Int -> Int -> IO ()
+printFreq index count = putStrLn $ concat
+    [ "Frequency of byte "
+    , show index
+    , ": "
+    , show count
+    ]
+```
+
+## Tutorial exercise above
+
+Now try taking a crack at the tutorial exercise we mentioned at the
+top. Some advice:
+
+* Use `mwc-random` package
+    * Not a recommendation for random packages, just a good way to
+      practice vectors
+* May want to consider:
+  [vector-th-unbox](https://www.stackage.org/package/vector-th-unbox)
+* Note: that won't provide the tightest representation!
+* Hard core: write an `Unbox` instance by hand
+* Less hard core (what I'd probably do): can you use
+  `GeneralizedNewtypeDeriving`?
