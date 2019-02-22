@@ -85,7 +85,7 @@ executables:
       buildable: false
 
 tests:
-  check404s:
+  hfp-test:
     main: Main.hs
     source-dirs: test
     ghc-options:
@@ -97,6 +97,15 @@ tests:
     - hspec
     - rio
     - spiderweb
+    - cryptonite
+    - html-conduit
+    - xml-conduit
+    - mtl
+
+    # Dependencies of snippets we test
+    - microlens-platform
+    - foldl
+    - wai-conduit
 
 # Define flags used by "yesod devel" to make compilation faster
 flags:

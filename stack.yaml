@@ -10,3 +10,6 @@ extra-deps:
 - github: snoyberg/yesod-gitrev
   commit: 23b6e4a3e063abdbf73a67221405f022964d1a20
 - githash-0.1.3.1@sha256:79a7265a0e2b52eec6d2d3d9102c1299d47562063e5b140bd9f785c33e9b41f7,1549
+
+ghc-options:
+   "$locals": -fhide-source-paths

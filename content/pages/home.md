@@ -1,5 +1,5 @@
 ---
-title: FP Complete's Haskell Homepage
+title: Commercial Haskell Accelerator
 ---
 
 <div class="row">
@@ -34,8 +34,8 @@ team found results in the best results with Haskell.
 
 ## Learn
 
-Want to learn Haskell? Up your skills? Browse documentation? Check out
-our [learn page](/learn).
+Looking to up your skills? Check out our [intermediate Haskell course
+syllabus](/syllabus) or our [reference learning material](/learn).
 
 </div>
 

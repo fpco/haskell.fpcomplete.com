@@ -21,3 +21,4 @@ cabal.sandbox.config
 \#*
 hfp.cabal
 build/*
+/tmp/
