@@ -7,7 +7,6 @@ online. Some of the top methods the FP Complete team recommends are:
 
 * [Commercial Haskell Gitter](https://gitter.im/commercialhaskell/commercialhaskell)
 * [Stack Overflow](https://stackoverflow.com/questions/tagged/haskell)
-* [Commercial Haskell Discourse](https://discourse.commercialhaskell.com/) *experimental*
 
 There are many more resources, such as in person meetups, IRC
 channels, and mailing lists. Instead of duplicating content here,
