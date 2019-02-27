@@ -20,7 +20,7 @@ team found results in the best results with Haskell.
 
 <span style="font-size:150%;font-weight:bold">New to Haskell?</span>
 
-<a class="btn btn-primary" style="color:white">Get me started!</a>
+<a class="btn btn-primary" style="color:white" href="/get-started">Get me started!</a>
 
 </div>
 
