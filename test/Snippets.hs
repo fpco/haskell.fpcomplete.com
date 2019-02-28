@@ -20,6 +20,7 @@ import qualified RIO.HashSet as HS
 import qualified RIO.Map as Map
 import qualified Crypto.Hash
 import Data.Yaml
+import Network.HTTP.Simple
 
 check :: IO ()
 check = runSimpleApp run
@@ -34,7 +35,7 @@ splitFiles lbs
       pure $ T.unpack fp : rest'
 
 data Content = Content
-  { _snippets :: !(Map Text FilePath)
+  { _snippets :: !(Map Text MarkdownSource)
   }
   deriving Show
 instance Semigroup Content where
@@ -47,13 +48,28 @@ newtype Resolver = Resolver Text
 instance FromJSON Resolver where
   parseJSON = withObject "Resolver" $ \o -> Resolver <$> o .: "resolver"
 
+data MarkdownSource = Local !FilePath | Remote !Text
+  deriving Show
+
+newtype MdUrl = MdUrl Text
+instance FromJSON MdUrl where
+  parseJSON = withObject "MdUrl" $ \o -> MdUrl <$> o .: "url"
+
+getSource :: FilePath -> RIO SimpleApp (Maybe MarkdownSource)
+getSource fp
+  | takeExtension fp == ".md" = pure $ Just $ Local fp
+  | takeExtension fp == ".yaml" = do
+      MdUrl url <- decodeFileThrow fp
+      pure $ Just $ Remote url
+  | otherwise = pure Nothing
+
 run :: RIO SimpleApp ()
 run = do
   expectedResolver <- decodeFileThrow "stack.yaml"
   Content snippets <-
     runConduitRes $
     sourceDirectoryDeep True "content" .|
-    filterC (\fp -> takeExtension fp == ".md") .|
+    concatMapMC (lift . getSource) .|
     foldMapMC (lift . parseContent expectedResolver)
   let snippetDir = "tmp" </> "snippets"
   createDirectoryIfMissing True snippetDir
@@ -85,10 +101,18 @@ run = do
 
 parseContent
   :: Resolver
-  -> FilePath
+  -> MarkdownSource
   -> RIO SimpleApp Content
-parseContent (Resolver expectedResolver) fp = do
-  md <- readFileUtf8 fp
+parseContent (Resolver expectedResolver) mdSrc = do
+  md <-
+    case mdSrc of
+      Local fp -> readFileUtf8 fp
+      Remote url -> do
+        req <- parseRequestThrow $ T.unpack url
+        res <- httpBS req
+        case decodeUtf8' $ getResponseBody res of
+          Left e -> error $ "Invalid UTF-8 at " ++ show url ++ ": " ++ show e
+          Right text -> pure text
   let html = commonmarkToHtml [] [] md
       Document _ root _ = DOM.parseBSChunks [encodeUtf8 html]
   goElem root
@@ -96,8 +120,8 @@ parseContent (Resolver expectedResolver) fp = do
     goElem (Element "code" _ [NodeContent text]) =
       case parseHeader text of
         NoHeader -> pure mempty
-        InvalidHeader e -> error $ "Invalid Stack header in " ++ show fp ++ ": " ++ e
-        ValidHeader -> pure $ Content (Map.singleton (stripWerror text) fp)
+        InvalidHeader e -> error $ "Invalid Stack header in " ++ show mdSrc ++ ": " ++ e
+        ValidHeader -> pure $ Content (Map.singleton (stripWerror text) mdSrc)
     goElem (Element _ _ children) = foldMapM goNode children
 
     goNode (NodeElement e) = goElem e
