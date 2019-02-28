@@ -20,7 +20,7 @@ recommend how to deal with more complicated cases.
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.ByteString as S
 import Data.Monoid ((<>))
@@ -48,7 +48,7 @@ main = do
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
@@ -81,7 +81,7 @@ functions:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Char8 as S8
@@ -102,7 +102,7 @@ distinction between `ByteString` and `Text`, consider:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.Char8 as S8
@@ -159,7 +159,7 @@ differences which need to be pointed out:
 
     ```haskell
     #!/usr/bin/env stack
-    -- stack --resolver lts-6.19 --install-ghc runghc --package text
+    -- stack --resolver lts-12.21 script
     import qualified Data.ByteString as S
     import qualified Data.ByteString.Char8 as S8
     import qualified Data.Text as T
@@ -194,7 +194,7 @@ encoding. Many common encodings are available in
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.ByteString as S
 import qualified Data.Text as T
@@ -220,7 +220,7 @@ exception. For example:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.Text.Encoding as TE
 
@@ -240,7 +240,7 @@ There are two recommended ways to avoid this. One is to do lenient decoding:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Encoding.Error as TEE
@@ -257,7 +257,7 @@ in the error condition, like `decodeUtf8'`:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.Text.Encoding as TE
 
@@ -324,7 +324,7 @@ this can cause confusion.
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.ByteString as S
 import qualified Data.Text.IO as TIO
@@ -357,7 +357,7 @@ example:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid ((<>))
 import qualified Data.Text.IO as TIO
@@ -403,7 +403,7 @@ functions, e.g.:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 import Data.Monoid ((<>))
@@ -434,7 +434,7 @@ What's wrong with the following snippet of code?
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid ((<>))
 import Data.Text (Text)
@@ -463,7 +463,7 @@ class. Let's start off with an example of a text builder:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid ((<>))
 import Data.Text.Lazy.Builder (Builder, toLazyText)
@@ -482,7 +482,7 @@ We can do something similar with bytestring:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid ((<>))
 import Data.ByteString.Builder (Builder, toLazyByteString)
@@ -498,7 +498,7 @@ in a fully streaming manner (such as via
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text --package streaming-commons
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Monoid ((<>))
 import qualified Data.ByteString as S
@@ -525,7 +525,7 @@ with some simple `Data.Text` functions, especially by leveraging the
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.19 --install-ghc runghc --package text --package streaming-commons
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Text (Text)
 import qualified Data.Text as T

@@ -19,6 +19,7 @@ import Control.Monad.Writer.Strict (execWriter, tell)
 import qualified RIO.HashSet as HS
 import qualified RIO.Map as Map
 import qualified Crypto.Hash
+import Data.Yaml
 
 check :: IO ()
 check = runSimpleApp run
@@ -42,13 +43,18 @@ instance Monoid Content where
   mempty = Content mempty
   mappend = (<>)
 
+newtype Resolver = Resolver Text
+instance FromJSON Resolver where
+  parseJSON = withObject "Resolver" $ \o -> Resolver <$> o .: "resolver"
+
 run :: RIO SimpleApp ()
 run = do
+  expectedResolver <- decodeFileThrow "stack.yaml"
   Content snippets <-
     runConduitRes $
     sourceDirectoryDeep True "content" .|
     filterC (\fp -> takeExtension fp == ".md") .|
-    foldMapMC (lift . parseContent)
+    foldMapMC (lift . parseContent expectedResolver)
   let snippetDir = "tmp" </> "snippets"
   createDirectoryIfMissing True snippetDir
   snippetFPs <- runConduit $ yieldMany (Map.toList snippets) .| foldMapMC (\(text, src) -> do
@@ -77,22 +83,48 @@ run = do
         logDebug $ "Removing file: " <> fromString fp
         removeFile fp)
 
-parseContent :: FilePath -> RIO SimpleApp Content
-parseContent fp = do
+parseContent
+  :: Resolver
+  -> FilePath
+  -> RIO SimpleApp Content
+parseContent (Resolver expectedResolver) fp = do
   md <- readFileUtf8 fp
   let html = commonmarkToHtml [] [] md
       Document _ root _ = DOM.parseBSChunks [encodeUtf8 html]
-  pure $ goElem root
+  goElem root
   where
-    goElem (Element "code" _ [NodeContent text])
-      | "#!/usr/bin/env stack" `T.isPrefixOf` text =
-          Content (Map.singleton (stripWerror text) fp)
-    goElem (Element _ _ children) = foldMap goNode children
+    goElem (Element "code" _ [NodeContent text]) =
+      case parseHeader text of
+        NoHeader -> pure mempty
+        InvalidHeader e -> error $ "Invalid Stack header in " ++ show fp ++ ": " ++ e
+        ValidHeader -> pure $ Content (Map.singleton (stripWerror text) fp)
+    goElem (Element _ _ children) = foldMapM goNode children
 
     goNode (NodeElement e) = goElem e
-    goNode _ = mempty
+    goNode _ = pure mempty
+
+    parseHeader :: Text -> ParseHeader
+    parseHeader text =
+      case T.lines text of
+        "#!/usr/bin/env stack":next:_ ->
+          case T.words next of
+            "--":"stack":rest
+              | "script" `elem` rest -> findResolver rest
+              | otherwise -> InvalidHeader "The word 'script' does not appear"
+            _ -> InvalidHeader "No -- stack comment following shebang"
+
+        _ -> NoHeader
+
+    findResolver :: [Text] -> ParseHeader
+    findResolver [] = InvalidHeader "No resolver found"
+    findResolver ("--resolver":x:_)
+      | x == expectedResolver = ValidHeader
+      | otherwise = InvalidHeader $ "Expected resolver " ++ show expectedResolver ++ ", got " ++ show x
+    findResolver (_:xs) = findResolver xs
 
 stripWerror :: Text -> Text
 stripWerror = T.unlines . filter (not . isWerror) . T.lines
   where
     isWerror = ("-Werror #-}" `T.isSuffixOf`)
+
+data ParseHeader = NoHeader | InvalidHeader !String | ValidHeader

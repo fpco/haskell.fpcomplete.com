@@ -49,7 +49,7 @@ and have the compiler generate the implementation for you.
 
 ```haskell
 #!/usr/bin/env stack
--- stack --install-ghc --resolver lts-7.4 runghc
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -82,7 +82,7 @@ where `PutM` is also an instance of `Monad`.
 
 ```haskell
 #!/usr/bin/env stack
--- stack --install-ghc --resolver lts-7.4 runghc
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Binary
 import Data.Text (Text)

@@ -395,7 +395,7 @@ Why not just freeze it in place? Two reasons, actually:
 
     ```haskell
     #!/usr/bin/env stack
-    -- stack --resolve lts-12.21 script
+    -- stack --resolver lts-12.21 script
     import           Data.Vector.Unboxed         (freeze)
     import qualified Data.Vector.Unboxed.Mutable as V
 

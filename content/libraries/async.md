@@ -680,7 +680,7 @@ see how a simple change in import lets us write much nicer code.
 
 ```haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-10.3
+-- stack script --resolver lts-12.21
 {-# LANGUAGE OverloadedStrings #-}
 import UnliftIO.Async
 import UnliftIO.Concurrent (threadDelay)

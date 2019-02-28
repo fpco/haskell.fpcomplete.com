@@ -108,10 +108,7 @@ libraries - when you start using it. If you want to be guaranteed that
 a specific set of packages will be used, you can set the `--resolver`
 on the command line.
 
-    $ stack --resolver lts-6.15 --install-ghc runghc --package http-conduit http.hs
-
-Note that we also included `--install-ghc` to make sure that the
-correct GHC is downloaded and installed if necessary.
+    $ stack --resolver lts-12.21 runghc --package http-conduit http.hs
 
 ## Script interpreter
 
@@ -127,7 +124,7 @@ If we modify our `http.hs` to say:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-12.5 script
+-- stack --resolver lts-12.21 script
 {-# LANGUAGE OverloadedStrings #-}
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Network.HTTP.Simple

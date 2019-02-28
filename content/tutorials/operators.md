@@ -60,7 +60,7 @@ vague statement with an example:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver ghc-7.10.3 runghc
+-- stack --resolver lts-12.21 script
 
 double :: Int -> Int
 double x = x + x
@@ -85,7 +85,7 @@ Not much more to it than that: take two functions and compose them together.
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver ghc-7.10.3 runghc
+-- stack --resolver lts-12.21 script
 
 double :: Int -> Int
 double x = x + x
@@ -108,7 +108,7 @@ In addition to its usage for function composition, the period is also used for h
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver ghc-7.10.3 runghc
+-- stack --resolver lts-12.21 script
 import qualified Data.Monoid
 
 main :: IO ()
@@ -149,7 +149,7 @@ Rewriting it using `&` gives us
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.4 runghc
+-- stack --resolver lts-12.21 script
 import Data.Function
 
 double :: Int -> Int
@@ -194,7 +194,7 @@ an identity and an associative binary operation. Some examples:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.4 runghc
+-- stack --resolver lts-12.21 script
 import Data.Monoid ((<>))
 
 main :: IO ()
@@ -217,7 +217,7 @@ and `Map`.
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver ghc-7.10.3 runghc
+-- stack --resolver lts-12.21 script
 import Data.Monoid ((<>))
 
 main :: IO ()
@@ -376,7 +376,7 @@ used in the ecosystem for a number of different activities, e.g.:
 
 ```haskell
 #!/usr/bin/env stack
--- stack --resolver lts-6.4 runghc --package async
+-- stack --resolver lts-12.21 script
 import Control.Applicative ((<|>))
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (Concurrently (..))

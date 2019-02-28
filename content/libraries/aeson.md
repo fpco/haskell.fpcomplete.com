@@ -9,7 +9,7 @@ to complex (but flexible).
 ## API docs
 
 The API documentation can be found
-[here](https://www.stackage.org/lts-6.3/package/aeson-0.11.2.0). There's plenty
+[here](https://www.stackage.org/lts-12.21/package/aeson). There's plenty
 of good information in the API docs.
 
 ## Decoding and encoding standard data types
@@ -60,7 +60,7 @@ compiler generate the implementation for you.
 
 ``` haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 import Data.Aeson
@@ -102,7 +102,7 @@ reverse - create a `Value` from a Haskell value of your type.
 
 ``` haskell
 #!/usr/bin/env stack
--- stack script --resolver lts-8.22
+-- stack script --resolver lts-12.21
 {-# LANGUAGE OverloadedStrings #-}
 import Control.Applicative
 import Data.Aeson
