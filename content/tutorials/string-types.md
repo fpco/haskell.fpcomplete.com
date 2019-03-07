@@ -818,7 +818,7 @@ import Data.Function (fix)
 import Control.Monad (unless)
 main =
   withBinaryFile "source.txt" ReadMode $ \hIn ->
-  withBinaryFile "dest.txt" ReadMode $ \hOut ->
+  withBinaryFile "dest.txt" WriteMode $ \hOut ->
   fix $ \loop -> do
     bs <- B.hGetSome hIn 4096
     unless (B.null bs) $ do
