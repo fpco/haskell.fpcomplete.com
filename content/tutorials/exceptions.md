@@ -2,10 +2,299 @@
 title: Safe exception handling
 ---
 
-__FIXME__ This needs to be updated to consolidate lots of content. In particular, I need to ensure we get all of the relevant content from:
+Exception handling can be a bit of a black art in most programming
+languages with runtime exceptions. Haskell's situation is even more
+complicated by the presence of *asynchronous exceptions* (described
+below). On top of that, the functions provided in the
+`Control.Exception` module make it particularly difficult to get all
+of the details right.
 
-* https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell
-* https://github.com/fpco/safe-exceptions/#readme
+This tutorial provides instruction on how to do things the right way
+in Haskell. It's a good idea to understand all of the gory details
+under the surface as well, though you can get far without those
+details. There is a blog post, webcast recording, and set of slides
+available providing an in-depth look at all of this called [Async
+Exception Handling in
+Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell).
+
+In this tutorial, we're going to focus on:
+
+* What "safe exception handling" means, at a high level
+* Which functions to use
+* Common patterns
+* Pitfalls to avoid
+
+What we won't do here:
+
+* Cover the full motivation for the design of the libraries in question
+* Debate the merits of runtime exceptions
+* Debate the merits of asynchronous exceptions
+
+## `UnliftIO.Exception`
+
+Instead of use the `Control.Exception` module, we recommend using the
+`UnliftIO.Exception` module from the `unliftio` package. It provides
+two important advantages over `Control.Exception`:
+
+* It works in more monads than just `IO` by using the `MonadIO` and
+  `MonadUnliftIO` typeclasses, see [the `unliftio`
+  library](/library/unliftio) for more information
+* It handles asynchronous exceptions better, as we'll describe below
+
+The `UnliftIO.Exception` module is reexported from both the `UnliftIO`
+and `RIO` modules (see [the `rio` library](/library/rio)). For our
+examples, we're simply going to use `RIO`.
+
+## What is safe exception handling?
+
+The definition we're going to use is "all resources are cleaned up
+promptly despite the presence of an exception." It's easiest to see
+what safe exception handling is by counterexample. Try to identify
+what is unsafe here:
+
+```haskell
+foo :: IO Result
+foo = do
+  resource <- openResource
+  result <- useResource resource
+  closeResource resource
+  pure result
+```
+
+If `useResource` throws an exception, then `closeResource` will never
+be called, which would be unsafe resource handling. In reality, we
+could ensure that the garbage collector cleans up the resources for
+us, but that fails our "promptly" requirement, since we have no
+guarantees of when the garbage collector will know it can clean up the
+resource. For some resources like file descriptors, this can easily
+cause your entire program to crash.
+
+If you're familiar with most languages with runtime exceptions, you
+may think that the following is safe:
+
+```haskell
+foo :: IO Result
+foo = do
+  resource <- openResource
+  eitherResult <- try $ useResource resource
+  closeResource resource
+  case eitherResult of
+    Left e -> throwIO e
+    Right result -> pure result
+```
+
+Firstly, the above code won't compile (we'll see why in the next
+section). However, even if we fix it so that it _does_ compile, it's
+still broken. Haskell's runtime system includes _asynchronous
+exceptions_. These allow other threads to kill our thread. In [the
+async library](/library/async), we use this to create useful functions
+like `race`. But in exception handling, these are a real pain. In the
+code above, an async exception could be received after the `try`
+completes but before the `closeResource` call.
+
+Even helpful functions like `finally` aren't sufficient in this
+case. As an exercise, try to figure out how asynchronous exceptions
+could cause `closeResource` to not be called in this code:
+
+```haskell
+foo :: IO Result
+foo = do
+  resource <- openResource
+  finally
+    (useResource resource)
+    (closeResource resource)
+```
+
+**Solution** In this case, an asynchronous exception could be received
+between the call to `openResource` finishing and `finally`
+beginning. The correct way to use this is to use the `bracket`
+function (which we'll go into more detail on below):
+
+```haskell
+foo :: IO Result
+foo = bracket openResource closeResource useResource
+```
+
+You can also address this with explicit usage of low level *exception
+masking* functions. We're explicitly not going to cover that in this
+tutorial, since it's error prone and rarely needed. Try to stick to
+the functions we discuss, like `catch` and `bracket`. The in depth
+blog post linked above provides the full gory details if desired.
+
+## How to throw exceptions
+
+There are three different ways exceptions can be thrown in Haskell:
+
+* Synchronously thrown: an exception is generated from `IO` code and
+  thrown inside a single thread
+* Asynchronously thrown: an exception is thrown from one thread to
+  another thread to cause it to terminate early
+* Impurely thrown: an exception is generated from pure code, and gets
+  thrown when a thunk is forced
+
+Asynchronous throwing is the odd man out here, so let's ignore it for
+the moment. When it comes to synchronous throwing, we use the
+`throwIO` function (or something built on top of it). For example:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+-- boilerplate, we'll get to this in a bit
+data MyException = MyException
+  deriving (Show, Typeable)
+instance Exception MyException
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will be called"
+  throwIO MyException
+  logInfo "This will never be called"
+```
+
+By contrast, the `impureThrow` function creates a value which, when
+forced, will throw an exception. For example:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+-- boilerplate, we'll get to this in a bit
+data MyException = MyException
+  deriving (Show, Typeable)
+instance Exception MyException
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will be called"
+  let x = impureThrow MyException
+  logInfo "This will also be called"
+  if x -- forces evaluation
+    then logInfo "This will never be called"
+    else logInfo "Neither will this"
+```
+
+A common example of impure exceptions you'll see in Haskell code is
+the `error` function. And in fact, sometimes it even looks and behaves
+like `throwIO`, such as:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will be called"
+  error "Impure or synchronous exception"
+  logInfo "Will this be called?"
+```
+
+It seems like `error` is the same as `throwIO` here. But it's _ever so
+slightly_ different. What's actually happening is that `error "..."`
+is receiving the type `RIO SimpleApp ()`. Then that action is forced,
+which generates a synchronous exception.
+
+The important point for our purposes here: once an impure exception is
+forced, we treat it as a synchronous exception in every way. Which
+brings us to the next bit.
+
+### Sync vs async
+
+There's a fundamental difference between how we handle synchronous
+versus asynchronous exceptions. A sync exception means _something went
+wrong locally_. We're free to clean up after ourselves, or fully
+recover. For example, if I try to read a file, and get a "does not
+exist" exception, it's valid to either rethrow the exception and give
+up, or to print a warning and continue running with some default
+value. For example:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  let fp = "myfile.txt"
+  message <- readFileUtf8 fp `catchIO` \e -> do
+    logWarn $ "Could not open " <> fromString fp <> ": " <> displayShow e
+    pure "This is the default message"
+  logInfo $ display message
+```
+
+An asynchronous exception is totally different. It is a demand from
+outside of our control to shut down as soon as possible. If we were to
+catch such an exception and recover from it, we would be breaking the
+expectations of the thread that tried to shut us down. Instead, with
+asynchronous exceptions, we're allowed to clean up, but not
+recover. For example, the `timeout` function uses asynchronous
+exceptions. What should the expected behavior here be?
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  res <- timeout 1000000 $ do
+    logInfo "Inside the timeout"
+    res <- tryAny $ threadDelay 5000000 `finally`
+      logInfo "Inside the finally"
+    logInfo $ "Result: " <> displayShow res
+  logInfo $ "After timeout: " <> displayShow res
+```
+
+Bad async exception handling would allow the "Result: " message to
+print. We don't want that to happen! Instead, we allow the `finally`
+cleanup call to occur an then immediately exit. This ensures that
+resource cleanup can happen (ensuring exception safety), while
+disallowing large delays from async exceptions.
+
+In sum, our goals are:
+
+* Synchronous exceptions: allow both recovery and cleanup
+* Asynchronous exceptions: allow cleanup, but disallow recovery
+
+We'll see how the functions in `UnliftIO.Exception` fall into these two categories.
+
+**FIXME**
+
+## Exception types
+
+Why doesn't this compile?
+
+```haskell
+foo :: IO ()
+foo = do
+  resource <- openResource
+  eitherResult <- try $ useResource resource
+  closeResource resource
+  case eitherResult of
+    Left e -> throwIO e
+    Right result -> pure result
+```
+
+* Hierarchy
+
+## Throwing
+
+## Cleaning up
+
+## Recovering
 
 Previous content below, still needs to be updated.
 
