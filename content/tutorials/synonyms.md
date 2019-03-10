@@ -130,14 +130,12 @@ Same `Monad`/`Applicative` specialization.
 ```haskell
 (++) :: [a] -> [a] -> [a]
 Data.Semigroup.(<>) :: Semigroup a => a -> a -> a
-Data.Monoid.(<>) :: Monoid m => m -> m -> m
 mappend :: Monoid m => m -> m -> m
 ```
 
-The presence of two different `<>` operators is purely a historical
-accident, caused by the fact that `Semigroup` is not (yet) a
-superclass of `Monoid`. The functionality for each version of the
-operator should be identical. In the case of `Monoid`, the `<>`
-operator is identical to the `mappend` function.
+`++` is simply `<>` and `mappend` specialized to lists. `mappend` should be the
+same as `<>` in all cases.
 
-`++` is simply `<>` and `mappend` specialized to lists.
+Note: historically, `Semigroup` was not a superclass of `Monoid`, resulting in
+`<>` and `mappend` having potentially different implementations. That no longer
+applies.
