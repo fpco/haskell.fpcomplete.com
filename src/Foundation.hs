@@ -45,6 +45,7 @@ instance Yesod App where
               , pageBody = pure $ Y.pageBody pc render
               , pageSkipH1 = True
               , pageEditLink = Nothing
+              , pageListed = True
               }
 
 displayPage :: PageHtml -> Handler Html
