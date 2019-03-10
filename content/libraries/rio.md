@@ -640,7 +640,7 @@ instance HasHandle App where
   handleL = lens appHandle (\x y -> x { appHandle = y })
 
 class HasName env where
-  nameL :: () -- change this!
+  nameL :: env -- change this!
 instance HasName App where
   nameL = _
 
