@@ -2,379 +2,702 @@
 title: Safe exception handling
 ---
 
-__FIXME__ This needs to be updated to consolidate lots of content. In particular, I need to ensure we get all of the relevant content from:
+Exception handling can be a bit of a black art in most programming
+languages with runtime exceptions. Haskell's situation is even more
+complicated by the presence of *asynchronous exceptions* (described
+below). On top of that, the functions provided in the
+`Control.Exception` module make it particularly difficult to get all
+of the details right.
 
-* https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell
-* https://github.com/fpco/safe-exceptions/#readme
+This tutorial provides instruction on how to do things the right way
+in Haskell. It's a good idea to understand all of the gory details
+under the surface as well, though you can get far without those
+details. There is a blog post, webcast recording, and set of slides
+available providing an in-depth look at all of this called [Async
+Exception Handling in
+Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell).
 
-Previous content below, still needs to be updated.
+In this tutorial, we're going to focus on:
 
-* * *
+* What "safe exception handling" means, at a high level
+* Which functions to use
+* Common patterns
+* Pitfalls to avoid
 
-This tutorial covers a relatively broad and previously underdocumented
-topic in the Haskell ecosystem. In particular, goals of this tutorial
-are:
+What we won't do here:
 
-* Explain the different types of exceptions
-* Explain how exceptions can be generated
-* Explain how interruptible actions work
-    * More to the point: interruptible actions introduce a concept of
-      trading off between *correctness* and *deadlock prevention*
-* Define requirements for proper exception safety in
-    * Normal code
-    * Resource acquisition code
-    * Resource cleanup code
-* Give guidelines on how to write exception safe code in general
-* Point out some existing violations of these rules in the Haskell
-  ecosystem
+* Cover the full motivation for the design of the libraries in question
+* Debate the merits of runtime exceptions
+* Debate the merits of asynchronous exceptions
 
-Many of the ideas behind this tutorial originated with the
-[safe-exceptions](/library/safe-exceptions) package, and as such it is
-strongly recommended that you work with that package to get maximum
-correctness and ease-of-use.
+## `UnliftIO.Exception`
 
-Like the safe-exceptions package, this tutorial takes runtime
-exceptions in Haskell as a fact, not a point for discussion, as this
-is the reality of the library ecosystem today. No guidelines are given
-here for when you yourself should generate runtime exceptions versus
-using something like `IO (Either MyError a)` or `ExceptT`. That
-discussion is left for a different time.
+Instead of using the `Control.Exception` module, we recommend using the
+`UnliftIO.Exception` module from the `unliftio` package. It provides
+two important advantages over `Control.Exception`:
 
-## Types of exceptions
+* It works in more monads than just `IO` by using the `MonadIO` and
+  `MonadUnliftIO` typeclasses, see [the `unliftio`
+  library](/library/unliftio) for more information
+* It handles asynchronous exceptions better, as we'll describe below
 
-We're going to follow the safe-exceptions package's definitions for
-exception types. It is strongly recommended that you read
-[the safe-exceptions tutorials](/library/safe-exceptions) first. As a
-quick summary:
+The contents of the `UnliftIO.Exception` module are reexported from both the `UnliftIO`
+and `RIO` modules (see [the `rio` library](/library/rio)). For our
+examples, we're simply going to use `RIO`.
 
-* While there is a difference in the type hierarchy for synchronous
-  and asynchronous exceptions (via the `SomeAsyncException` type),
-  this distinction is not enforced by the `Control.Exception` module
-  (e.g., you can synchronously throw via `throwIO` an
-  asynchronously-typed exception).
-* Despite this limitation, we assume that we can fully distinguish
-  whether an exception was thrown synchronously or asynchronously via
-  its type. This contract is enforced by the `Control.Exception.Safe`
-  module.
-* Impure exceptions are exceptions present in pure code, where
-  evaluating a pure value results in an exception. These are treated
-  fully as synchronous exceptions.
+## What is safe exception handling?
 
-## Defining exception safety
-
-If we're going to strive for something like exception safety, we
-better know what exactly we're looking for! Following
-[David Abrahams's exception safety guarantees](https://en.wikipedia.org/wiki/Exception_safety),
-we're currently looking for level 3 "basic exception safety", aka
-"no-leak guarantee", which quoting from Wikipedia means:
-
-> Partial execution of failed operations can cause side effects, but
-> all invariants are preserved and there are no resource leaks
-> (including memory leaks). Any stored data will contain valid values,
-> even if they differ from what they were before the exception.
-
-Two of the most common examples of functions that exist which require exception safety are:
-
-* `withFile`, opens a file, performs an action with the file handle,
-  and then closes the file. We need to ensure that the file is always
-  closed, regardless of any exceptions thrown, when `withFile` exits
-* `withMVar` (or `modifyMVar`), which should ensure that in all cases
-  the `MVar` is left filled when the function exits
-
-With the definition and resulting concrete goals in mind, let's dive
-into actually writing such safe code.
-
-## Motivating case: `withFile`
-
-Let's take a simple fake implementation of `withFile` to motivate
-exception safety. Our first stab at it looks like this:
+The definition we're going to use is "all resources are cleaned up
+promptly despite the presence of an exception." It's easiest to see
+what safe exception handling is by counterexample. Try to identify
+what is unsafe here:
 
 ```haskell
-withFile fp inner = do
-    h <- openFile fp
-    result <- inner h
-    closeFile h
-    return result
+foo :: IO Result
+foo = do
+  resource <- openResource
+  result <- useResource resource
+  closeResource resource
+  pure result
 ```
 
-This is clearly _not_ exception safe: if the function `inner` throws
-an exception, `closeFile` will never be called, and the file will
-remain open after exiting `withFile`. This violates our guarantee
-described above. So let's throw that out as obviously incorrect code,
-and try something slightly better as a baseline:
+If `useResource` throws an exception, then `closeResource` will never
+be called, which would be unsafe resource handling. In reality, we
+could ensure that the garbage collector cleans up the resources for
+us, but that fails our "promptly" requirement, since we have no
+guarantees of when the garbage collector will know it can clean up the
+resource. For some resources like file descriptors, this can easily
+cause your entire program to crash.
+
+If you're familiar with most languages with runtime exceptions, you
+may think that the following is safe:
 
 ```haskell
-withFile fp inner = do
-    h <- openFile fp
-    inner h `finally` closeFile h
+foo :: IO Result
+foo = do
+  resource <- openResource
+  eitherResult <- try $ useResource resource
+  closeResource resource
+  case eitherResult of
+    Left e -> throwIO e
+    Right result -> pure result
 ```
 
-This code looks a lot better, since an exception from `inner` will not
-prevent `closeFile` from running. But we're not out of the woods yet:
+Firstly, the above code won't compile (we'll see why in the next
+section). However, even if we fix it so that it _does_ compile, it's
+still broken. Haskell's runtime system includes _asynchronous
+exceptions_. These allow other threads to kill our thread. In [the
+async library](/library/async), we use this to create useful functions
+like `race`. But in exception handling, these are a real pain. In the
+code above, an async exception could be received after the `try`
+completes but before the `closeResource` call.
 
-* How do we deal with asynchronous exceptions?
-* What happens if `openFile` throws an exception?
-* What happens if `closeFile` throws an exception?
-* How do we know which `IO` actions can throw an exception?
-
-All four of these questions will drive some serious exploration of our
-design space. Let's attack them one by one.
-
-## Asynchronous exceptions
-
-The basic idea of async exceptions is that they can occur _anywhere_:
-an `IO` action, pure code, during a monadic bind, etc. In our
-`withFile` example above, an async exception can be thrown:
-
-* Before the call to `openFile`
-* During the call to `openFile`
-* Between `openFile` and `finally`
-* After `finally` before exiting `withFile`
-* Inside `inner`
-
-As an exercise, I recommend that you step through these different
-cases and see whether our `withFile` leaks resources or not.
-
-The first trick we need to add to our arsenal is *masking*. This sets
-up a region of code wherein asynchronous exceptions are guaranteed
-_not_ to be thrown. Usage is pretty straightforward:
+Even helpful functions like `finally` aren't sufficient in this
+case. As an exercise, try to figure out how asynchronous exceptions
+could cause `closeResource` to not be called in this code:
 
 ```haskell
-withFile fp inner = mask $ \restore -> do
-    h <- openFile fp
-    restore (inner h) `finally` closeFile h
+foo :: IO Result
+foo = do
+  resource <- openResource
+  finally
+    (useResource resource)
+    (closeResource resource)
 ```
 
-The `restore` function will restore the original masking state, which
-usually means "turn async exceptions back on." We restore async
-exceptions for the inner action so as to avoid creating an
-impossible-to-kill thread, but make sure that we do all of our
-allocation and cleanup in a masked state so we can avoid getting
-exceptions at unexpected places. We now know for certain that only
-`IO` actions have the potential to throw an exception, and ensure that
-our code does not leak in the case of any of those actions leaking
-exceptions.
-
-__Exercise__ Write a function called `with2Files` which will open and
-guarantee the close of two files instead of just one. You can first
-implement in terms of `withFile`, and then implement without the help
-of `withFile`.
-
-__Solution__
+**Solution** In this case, an asynchronous exception could be received
+between the call to `openResource` finishing and `finally`
+beginning. The correct way to use this is to use the `bracket`
+function (which we'll go into more detail on below):
 
 ```haskell
-with2Files fp1 fp2 inner = mask $ \restore -> do
-    h1 <- openFile fp1
-    h2 <- openFile fp2 `onException` closeFile h1
-    restore (inner h1 h2) `finally` closeFile h2 `finally` closeFile h1
+foo :: IO Result
+foo = bracket openResource closeResource useResource
 ```
 
-The big takeaway you should get from this exercise: while masking
-prevent asynchronous exceptions from running, it does _nothing_ to
-prevent synchronous exceptions. You must still deal with those
-explicitly.
+You can also address this with explicit usage of low level *exception
+masking* functions. We're explicitly not going to cover that in this
+tutorial, since it's error prone and rarely needed. Try to stick to
+the functions we discuss, like `catch` and `bracket`. The in depth
+blog post linked above provides the full gory details if desired.
 
-## Exceptions in an allocation function
+## How to throw exceptions
 
-It's entirely possible that the `openFile` function itself may throw
-an exception (e.g., permission denied to open the given file). If we
-think at all about our defined guarantees above, the behavior of
-`openFile` in that situation should be obvious: it must not leak any
-resources! We must be guaranteed that, if an exception is thrown in
-`openFile`, it cleans up after itself completely.
+There are three different ways exceptions can be thrown in Haskell:
 
-Using our example of `with2Files`, we can demonstrate the proper way
-to write an `open2Files` function that can be used for allocation:
+* Synchronously thrown: an exception is generated from `IO` code and
+  thrown inside a single thread
+* Asynchronously thrown: an exception is thrown from one thread to
+  another thread to cause it to terminate early
+* Impurely thrown: an exception is generated from pure code, and gets
+  thrown when a thunk is forced
+
+Asynchronous throwing is the odd man out here, so let's ignore it for
+the moment. When it comes to synchronous throwing, we use the
+`throwIO` function (or something built on top of it). For example:
 
 ```haskell
-open2Files fp1 fp2 = do
-    h1 <- openFile fp1
-    h2 <- openFile fp2 `onException` closeFile h1
-    return (h1, h2)
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+-- boilerplate, we'll get to this in a bit
+data MyException = MyException
+  deriving (Show, Typeable)
+instance Exception MyException
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will be called"
+  throwIO MyException
+  logInfo "This will never be called"
 ```
 
-Notice how `h1` will be closed if `fp2` throws an exception, and only
-on success will both handles remain open. This is the behavior desired
-of a well written allocation function.
-
-The other thing to point out is that _we don't mask exceptions_. It is
-_not_ the responsibility of the allocation function to mask
-asynchronous exceptions, it can rely on the fact that the caller has
-done so already. The logic behind this is: there is no way for the
-allocation function to mask exceptions outside of itself, and doing so
-is necessary for proper exception safety. Since the allocator has no
-power to do this itself, it demands masking as a precondition to being
-called.
-
-## Interruptible actions
-
-Before we can jump into cleanup actions, we need to take a slight
-detour and discuss interruptible actions. These are
-[described in the Control.Exception docs](https://www.stackage.org/haddock/nightly-2016-07-17/base-4.9.0.0/Control-Exception.html#g:13). The
-basic idea is that these are actions which, even when async exceptions
-are masked, can throw an asynchronous exception. These doesn't violate
-any of our comments above, since the exceptions are being thrown from
-an `IO` action. However, the exceptions are being generated as a kill
-signal from outside of our current subroutine, and therefore should be
-treated as asynchronous/unrecoverable exceptions.
-
-It's important to understand that the purpose of allowing for such a
-concept as an interruptible action is to *avoid deadlocks*. However,
-the tradeoff is that interruptible actions make it more difficult to
-write exception safe code, since they have allowed yet another
-"wormhole" through which exceptions can tunnel into our code. The
-simplest approach to dealing with this is: assume all `IO` actions may
-throw an exception. In practice, there is a subset of non-blocking
-`IO` actions which are known not to be interruptible, and are listed
-in the `Control.Exception` documentation linked to above.
-
-Even these interrupting exceptions can be masked as well, using the
-`uninterruptibleMask` function. Inside an `uninterrupibleMask`, it's
-still entirely possible for a synchronous exception to be generated
-(via `throwIO` or equivalent), but no asynchronous exceptions will be
-thrown. This is important as we dive into cleanup functions.
-
-## Cleanup functions
-
-Similar to allocation functions, cleanup functions need guarantees
-that an asynchronous exception will not be thrown before it starts
-executing, and therefore it's necessary for a function like `bracket`
-or `withFile` to mask async exceptions. And therefore, just like
-allocation functions, we don't need to use `mask` inside our cleanup
-functions, since it can be assumed to already be in place.
-
-However, it's less clear that
-uninterruptible masking is the right thing. There is a long discussion
-of this
-[on the safe-exceptions issue tracker](https://github.com/fpco/safe-exceptions/issues/3). Ultimately,
-the decision from that discussion is that it is better to err on the
-side of caution and use uninterruptible masking, at the possible risk
-of introducing delays or deadlocks. (See the section on `hClose` and
-flushing for more details.)
-
-Continuing with our ongoing example, let's look at how to write a
-cleanup function that closes two files:
+By contrast, the `impureThrow` function creates a value which, when
+forced, will throw an exception. For example:
 
 ```haskell
-close2Files (h1, h2) = closeFile h1 `finally` closeFile h2
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+-- boilerplate, we'll get to this in a bit
+data MyException = MyException
+  deriving (Show, Typeable)
+instance Exception MyException
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will be called"
+  let x = impureThrow MyException
+  logInfo "This will also be called"
+  if x -- forces evaluation
+    then logInfo "This will never be called"
+    else logInfo "Neither will this"
 ```
 
-Notice how, even if `closeFile h1` throws an exception, `closeFile h2`
-will still be called. This meets our guarantee of ensuring all
-resources are cleaned up even in the case of exceptions. This relies
-on `closeFile` itself providing the appropriate cleanup guarantees,
-namely that when called in a masked state, it guarantees that it will
-not return until the resources allocated by `openFile` are freed.
-
-Also, since a cleanup handler is run in such a deadlock-friendly mode
-(uninterruptible masking), it should avoid performing long-running
-actions whenever possible.
-
-## Difference between allocation and cleanup
-
-In `safe-exceptions`, allocations run in a `mask`, while cleanups
-run in an `uninterruptibleMask`. This difference is due to a fundamental
-difference between allocations and cleanups. If a program performing
-an allocation is interrupted, no damage is done (as long as the
-allocation is atomic). On the other hand, an interruptible cleanup
-is a possible source of leaks, since acquired resources will not be
-released.
-
-Note that interrupting threads is an ordinary occurrence in Haskell, and
-not something we do not expect or that we know leads to the whole program
-to terminate. For example, the `race` function from the `async` package
-will spawn two threads and terminate the one that takes longer to execute.
-If we use `race` with computations using interruptible cleanups we
-have no guarantees that those cleanups will indeed be run, and thus
-we can leak resources.
-
-A consequence of this design choice is that there's no problem with
-allocations performing long-running, blocking actions; but we must
-make sure that the cleanups are performed quickly in order to avoid
-unduly delays. Even worse, if a cleanup deadlocks (or in other words
-waits forever) the thread executing it will be unkillable.
-
-## Summary of guarantees
-
-Putting it all together, here are the expected guarantees for our
-functions:
-
-* An allocation function:
-    * Can assume that it is being called in a masked (interruptible) state
-    * Must either successfully allocate a set of resources (file
-      descriptor, mutex, etc) or throw an exception and allocate no
-      resources at all
-* A cleanup function:
-    * Can assume it is being called in a masked (uninterruptible)
-      state, though for stricter conformance with `Control.Exception`
-      should assume that it is called in an interruptible state
-    * Must successfully release all resources which were allocated by
-      the allocation function
-    * Should avoid long-running or blocking actions
-
-With these guarantees met, we can use any given allocation/cleanup
-function combination in a `bracket` call and know that, when the
-`bracket` call exits, no resources will be leaked.
-
-## `hClose` and flushing
-
-To demonstrate a more complicated corner case, let's consider the
-real-life `openFile`/`hClose` allocation/cleanup combo. The actual
-`withFile` function from `System.IO` is defined as:
+A common example of impure exceptions you'll see in Haskell code is
+the `error` function. And in fact, sometimes it even looks and behaves
+like `throwIO`, such as:
 
 ```haskell
-withFile name mode = bracket (openFile name mode) hClose
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will be called"
+  error "Impure or synchronous exception"
+  logInfo "Will this be called?"
 ```
 
-The `openFile` function has to set up some bookkeeping variables for
-the `Handle`, get a file descriptor, and return. It's relatively
-uninteresting. `hClose`, on the other hand, has two distinct
-requirements:
+It seems like `error` is the same as `throwIO` here. But it's _ever so
+slightly_ different. What's actually happening is that `error "..."`
+is receiving the type `RIO SimpleApp ()`. Then that action is forced,
+which generates a synchronous exception.
 
-1. Flush the remaining data in the buffer to the file descriptor
-2. Close the file descriptor
+The important point for our purposes here: once an impure exception is
+forced, we treat it as a synchronous exception in every way. Which
+brings us to the next bit.
 
-Flushing the buffer is necessary during normal exit (without
-exceptions), and is probably desired even in exceptional
-cases. However, it's problematic in the case of our thread dying from
-an async exception, since it can cause a significant delay in exit
-(violating our "Should avoid long-running or blocking actions"
-guarantee).
+### Sync vs async
 
-By contrast, the "close the file descriptor" action is absolutely
-required for proper safe exception guarantees, regardless of why we're
-exiting (normal exit, sync exception, or async exception). Based on
-our analysis, there is no way to define `bracket` and `hClose` to make
-`withFile` behave exactly the way described here. Instead, we need to
-separate out the required and blocking actions from each
-other. Assuming that we have `hFlush` and `hCloseWithoutFlush`, this
-would look something like:
+There's a fundamental difference between how we handle synchronous
+versus asynchronous exceptions. A sync exception means _something went
+wrong locally_. We're free to clean up after ourselves, or fully
+recover. For example, if I try to read a file, and get a "does not
+exist" exception, it's valid to either rethrow the exception and give
+up, or to print a warning and continue running with some default
+value. For example:
 
 ```haskell
-withFile name mode inner = mask $ \restore -> do
-    h <- openFile name mode
-    eres <- try $ restore $ do
-        eres <- try (inner h)
-        case eres of
-            Left (e :: SomeException)
-                -- when an async exception was thrown,
-                -- don't block in order to flush
-                | isAsyncException e -> return ()
-            _ -> hFlush h
-        either throwIO return eres
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
 
-    _ :: Either SomeException () <- try $ uninterruptibleMask_ $ hCloseWithoutFlush h
-    either throwIO return eres
+main :: IO ()
+main = runSimpleApp $ do
+  let fp = "myfile.txt"
+  message <- readFileUtf8 fp `catchIO` \e -> do
+    logWarn $ "Could not open " <> fromString fp <> ": " <> displayShow e
+    pure "This is the default message"
+  logInfo $ display message
 ```
 
-This hopefully demonstrates the inherent complexity with attempting to
-give full exception guarantees while simultaenously avoiding blocking
-calls. This is an extreme case which most people will not encounter in
-their own code.
+An asynchronous exception is totally different. It is a demand from
+outside of our control to shut down as soon as possible. If we were to
+catch such an exception and recover from it, we would be breaking the
+expectations of the thread that tried to shut us down. Instead, with
+asynchronous exceptions, exception handling best practices tell us we're allowed to clean up, but not
+recover. For example, the `timeout` function uses asynchronous
+exceptions. What should the expected behavior here be?
 
-Overall, our recommendation is: if you have to choose between a
-potential deadlock or a potential resource leak, err on the side of
-deadlocking. It will be a more explicit bug, and is typically only
-triggered by another mistake in your code. Based on that, if you're
-uncertain if you should use `mask` or `uninterruptibleMask`, use the
-latter.
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+oneSecond, fiveSeconds :: Int
+oneSecond = 1000000
+fiveSeconds = 5000000
+
+main :: IO ()
+main = runSimpleApp $ do
+  res <- timeout oneSecond $ do
+    logInfo "Inside the timeout"
+    res <- tryAny $ threadDelay fiveSeconds `finally`
+      logInfo "Inside the finally"
+    logInfo $ "Result: " <> displayShow res
+  logInfo $ "After timeout: " <> displayShow res
+```
+
+Bad async exception handling would allow the "Result: " message to
+print. We don't want that to happen! Instead, we allow the `finally`
+cleanup call to occur and then immediately exit. This ensures that
+resource cleanup can happen (ensuring exception safety), while
+disallowing large delays from async exceptions.
+
+In sum, our goals are:
+
+* Synchronous exceptions: allow both recovery and cleanup
+* Asynchronous exceptions: allow cleanup, but disallow recovery
+
+We'll see how the functions in `UnliftIO.Exception` fall into these two categories.
+
+## Exception types
+
+In addition to how we throw exceptions, there's also the issue of the
+types of exceptions. This may be surprising, but the Haskell exception
+system is modeled off of Java-style Object Oriented inheritance
+(shocking, I know). There's a typeclass, `Exception`, and a data type
+`SomeException` which is the ancestor of all exceptions.
+
+How do you get OO-style inheritance into Haskell? Like this:
+
+```haskell
+data SomeException = forall e. Exception e => SomeException e
+
+class (Typeable e, Show e) => Exception e where
+  toException :: e -> SomeException
+  fromException :: SomeException -> Maybe e
+  displayException :: e -> String -- for pretty display purposes
+```
+
+Here's how this works: in order for a type to be an exception, it must
+be possible to convert a value of that type into a `SomeException`
+value (using the `toException` method). It must also be possible to
+attempt to convert a `SomeException` into your type from
+`fromException`, though that conversion may fail. And finally,
+`SomeException` is nothing more than an existential type saying "I've
+got something which is a instance of the `Exception` typeclass.
+
+Still confused? Don't worry, that's normal. Let's see an example of
+defining a simple exception type:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import Data.Typeable (cast)
+import RIO
+
+data MyException = MyException
+  deriving (Show, Typeable)
+instance Exception MyException where
+  -- these are the default implementations, so you can simply omit
+  -- them
+  toException e = SomeException e
+  fromException (SomeException e) = cast e -- uses Typeable
+
+main :: IO ()
+main =
+  runSimpleApp $
+  throwIO MyException `catch` \MyException ->
+  logInfo "I caught my own exception!"
+```
+
+This uses the `Typeable` typeclass, which allows for runtime type
+analysis, which is what makes all of this magic work. Love it or hate
+it, this is at the core of the exception handling mechanism in
+Haskell.
+
+We can also create hierarchies of exceptions. In my experience, these
+aren't actually used that often (outside of async exceptions, which
+we'll get to in a bit).
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+import Data.Typeable (cast)
+import RIO
+
+data Parent = Parent1 Child1 | Parent2 Child2
+  deriving (Show, Typeable)
+instance Exception Parent
+
+data Child1 = Child1
+  deriving (Show, Typeable)
+instance Exception Child1 where
+  toException = toException . Parent1 -- cast up through the Parent type
+  fromException se =
+    case fromException se of
+      Just (Parent1 c) -> Just c
+      _ -> Nothing
+
+data Child2 = Child2
+  deriving (Show, Typeable)
+instance Exception Child2 where
+  toException = toException . Parent2 -- cast up through the Parent type
+  fromException se =
+    case fromException se of
+      Just (Parent2 c) -> Just c
+      _ -> Nothing
+
+main :: IO ()
+main = runSimpleApp $ do
+  throwIO Child1 `catch` (\(_ :: SomeException) -> logInfo "Caught it!")
+  throwIO Child1 `catch` (\(_ :: Parent) -> logInfo "Caught it again!")
+  throwIO Child1 `catch` (\(_ :: Child1) -> logInfo "One more catch!")
+  throwIO Child1 `catch` (\(_ :: Child2) -> logInfo "Missed!")
+```
+
+In this case, both `Child1` and `Child2` are children of the `Parent`
+type, and `Parent` is a child of the `SomeException` type. Therefore,
+if we throw a `Child1`, catching a `SomeException` or a `Parent` will
+catch the `Child1`. However, trying to catch a `Child2` will _not_
+catch the `Child1`, and the exception will escape.
+
+Which brings us to...
+
+### Type ambiguity
+
+Why doesn't this compile?
+
+```haskell
+foo :: IO ()
+foo = do
+  resource <- openResource
+  eitherResult <- try $ useResource resource
+  closeResource resource
+  case eitherResult of
+    Left e -> throwIO e
+    Right result -> pure result
+```
+
+The type of `try` is (slightly simplified):
+
+```haskell
+try :: Exception e => IO a -> IO (Either e a)
+```
+
+Notice the type variable `e`. `try` will catch whichever type of
+exception you ask it to. But if you're unclear about which exception
+type you care about, the compiler will complain about ambiguous
+types. That's why, in our hierarchical exception above, I turned on
+`ScopedTypeVariables` and included signatures like `` `catch` (\(_ ::
+Child1) ->``.
+
+We'll discuss in the recovering section below some common practices
+around catching exceptions.
+
+### Async exceptions
+
+Previously, we pointed out that the difference between a synchronous
+and asynchronous exception is how they are thrown (via `throwIO` or
+`throwTo`). Unfortunately, there's no way to determine when catching
+an exception how it was thrown, making it difficult to live up to our
+goals above to never recover from an async exception. Fortunately, we
+have a workaround: use a different type for async exceptions!
+
+Using the hierarchical exception mechanism above, we have a new data
+type, `SomeAsyncException`, which is a child of `SomeException`. All
+exceptions which are thrown asynchronously must be a child of that
+exception type. And conversely, asynchronous exceptions must _not_ be
+thrown synchronously. The `UnliftIO.Exception` module has quite a few
+safeguards in place to ensure both of these conditions are met.
+Please see the "Async
+Exception Handling in Haskell" article above for the gory details.
+
+Upshot of all of this:
+
+* If you define your own exception type for asynchronous exceptions,
+  make it a child of `SomeAsyncException`. (Note: this is a pretty
+  unusual thing to do.)
+* If you define your own exception type for synchronous exceptions,
+  don't make it a child of `SomeAsyncException`.
+* The functions we'll mention below for cleaning up and recovering are
+  able to determine whether an exception is sync or async based on its
+  type.
+
+Cool? Awesome! That's quite enough backstory. Let's start covering
+usage of the API.
+
+## Throwing
+
+We're not going to talk about using async exceptions to kill other
+threads, since we're not talking about concurrent
+programming. Instead, please check out the [async
+library](/library/async) and the `race` and `cancel` functions it
+provides. Instead, we're going to focus on synchronous exception
+throwing.
+
+The most basic function for this is:
+
+```haskell
+throwIO :: (MonadIO m, Exception e) => e -> m a
+```
+
+Given any value which is an instance of `Exception`, you can throw it
+as a runtime exception for any monad which is a `MonadIO`
+instance. This works for built in exception types, as well as any you
+define yourself.
+
+Sometimes you want to use synchronous exceptions but don't want to go
+through the overhead of defining your own exception type. In those
+cases, you can use the helper:
+
+```haskell
+throwString :: (MonadIO m, HasCallStack) => String -> m a
+```
+
+`throwString` looks pretty similar to `error`:
+
+```haskell
+error :: HasCallStack => String -> a
+```
+
+The difference is that the former throws a synchronous exception of type `StringException`,
+whereas the latter creates a thunk which, when evaluated, throws a
+synchronous exception of type `ErrorCall`. To demonstrate the difference:
+
+```haskell
+throwString "foo" :: IO () -- throws an exception
+error "foo" :: IO () -- throws an exception, because the thunk is evaluated
+throwString "foo" `seq` pure () :: IO () -- doesn't throw an exception!
+error "foo" `seq` pure () :: IO () -- does throw an exception!
+throwString "foo" :: () -- type error
+error "foo" :: () -- compiles, and when evaluated will throw an exception
+```
+
+Typically, we advise away from exceptions in pure code, and thus
+`error` is best avoided. But _if_ you really want an exception in pure
+code, you can also use `impureThrow`, which lets you use your own
+exception type:
+
+```haskell
+impureThrow :: Exception e => e -> a
+```
+
+## Cleaning up
+
+Cleaning up allows you to define some action which should be run when
+an exception occurs. However, after your action is run, the exception
+will be rethrown. In other words, when cleaning up, you *cannot
+recover* from an exception. This makes cleanup functions safe to use
+with asynchronous exceptions.
+
+The simplest cleanup function is `finally`, which ensures that an
+action is run whether or not an exception is thrown:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will print first"
+  throwString "This will print last as an error message"
+    `finally` logInfo "This will print second"
+  logInfo "This will never print"
+```
+
+Similar is the `onException` function, which will only run its second
+argument if the first argument exited with an exception.
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  logInfo "This will print first"
+    `onException` logInfo "This will never print"
+  throwString "This will print last as an error message"
+    `onException` logInfo "But this will print second"
+  logInfo "This will never print"
+```
+
+And the most commonly used of this cleanup functions is likely
+`bracket`. `bracket` is so popular that there's even a style of
+functions called "the bracket pattern." `bracket` takes a resource
+allocation function, a resource cleanup function, and a function to
+use the resource, and ensures that cleanup occurs. It looks like:
+
+```haskell
+bracket
+  :: MonadUnliftIO m
+  => m a -- ^ allocate
+  -> (a -> m b) -- ^ cleanup
+  -> (a -> m c) -- ^ use
+  -> m c
+```
+
+**Exercise** Implement a `withBinaryFile` function (specialized to
+`IO` for simplicity) using `bracket`, `hClose`, and
+`System.IO.openBinaryFile`.
+
+There are a few other functions available, like
+`withException`. Overall, these functions are fairly easy to
+understand, but take some experience to know how to use correctly.
+
+## Recovering
+
+The exception recovery functions allow you to catch an exception and
+prevent it from propagating higher up the call stack. These functions
+only work on synchronous exceptions; they will totally ignore
+asynchronous exceptions. We'll start with the `try` family of
+functions, and then introduce the very similar `catch` and `handle`
+families.
+
+The basic function is `try`:
+
+```haskell
+try :: (MonadUnliftIO m, Exception e) => m a -> m (Either e a)
+```
+
+If the provided action was successful, it will return a `Right`,
+otherwise it will return a `Left`. And if the provided action throws a
+different type of exception than expected, that exception will be
+rethrown.
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  res1 <- try $ throwString "This will be caught"
+  logInfo $ displayShow (res1 :: Either StringException ())
+
+  res2 <- try $ pure ()
+  logInfo $ displayShow (res2 :: Either StringException ())
+
+  res3 <- try $ throwString "This will be caught"
+  logInfo $ displayShow (res3 :: Either SomeException ())
+
+  res4 <- try $ throwString "This will *not* be caught"
+  logInfo $ displayShow (res4 :: Either IOException ())
+```
+
+Having to specify the type of exception you want can be tedious, so
+there are two helper functions that address common cases. The `tryIO`
+function is specialized to `IOException`, which is the type used by
+many function in standard libraries which perform I/O. For example:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  result <- tryIO $ readFileUtf8 "does-not-exist"
+  case result of
+    Left e -> logError $ "Error reading file: " <> displayShow e
+    Right text -> logInfo $ "That's surprising... " <> display text
+```
+
+Notice how, in the above, we didn't need any explicit type
+signatures. The type of `e` is constrained to be `IOException`.
+
+The other helper function is `tryAny`, which constraints the exception
+to be `SomeException`. As we discussed above, `SomeException` is the
+parent exception type in the hierarchy, and therefore this function
+will catch _all_ synchronous exceptions. We can replace `tryIO` with
+`tryAny` above, and the error message will remain unchanged.
+
+One more aspect of the `try` family: remember those pesky impure
+exceptions? Well, it's possible for them to leak through. For example:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+
+main :: IO ()
+main = runSimpleApp $ do
+  result1 <- tryAny $ error "This will be caught"
+  case result1 of
+    Left _ -> logInfo "Exception was caught"
+    Right () -> logInfo "How was this successful?!?"
+
+  result2 <- tryAny $ pure $ error "This will escape!"
+  case result2 of
+    Left _ -> logInfo "Exception was caught"
+    Right () -> logInfo "How was this successful?!?"
+```
+
+In the first case, the impure exception was forced, turned into a
+synchronous exception, and caught by `tryAny`. In the second case,
+however, we wrapped up the impure exception with `pure`, preventing it
+from being forced. As far as `tryAny` is concerned, the second action
+succeeded! Then, when we try to pattern match on `result2`, we force
+the impure exception hiding inside the `Right`.
+
+To work around this, we have the `tryAnyDeep` function, which forces
+the value using `NFData`. Swapping out `tryAny` with `tryAnyDeep` will
+result in both exceptions being caught.
+
+Once you understand how to use `try`, using `catch` and `handle` is
+basically the same thing. Instead of returning an `Either` value, you
+provide these functions with actions to perform with the exception if
+one occurs. The type signatures are:
+
+```haskell
+catch :: (MonadUnliftIO m, Exception e) => m a -> (e -> m a) -> m a
+handle :: (MonadUnliftIO m, Exception e) => (e -> m a) -> m a -> m a
+```
+
+`handle` is just `catch` with the order of arguments reversed. These
+functions come with all the variations of `try` mentioned aboved
+(e.g. `catchIO`, `handleAny`). Feel free to use whichever is the most
+convenient.
+
+**Exercise** Implement `catch` and `handle` in terms of `try`, and
+implement `try` in terms of `catch`.
+
+## Going deeper
+
+This is a relatively high level overview of exception handling in
+Haskell. As mentioned, the trick is to get a lot of practice using the
+functions above. And if you're interested in getting a much deeper
+intuition, please check out [Async Exception Handling in
+Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell).

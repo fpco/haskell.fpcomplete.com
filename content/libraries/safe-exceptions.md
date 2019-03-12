@@ -1,5 +1,6 @@
 ---
 title: Safe and simple exception handling
+listed: false
 ---
 
 We previously recommended using the `safe-exceptions` library for exception

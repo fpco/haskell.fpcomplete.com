@@ -35,6 +35,7 @@ data Page body = Page
   , pageBody :: !body
   , pageSkipH1 :: !Bool
   , pageEditLink :: !(Maybe Text)
+  , pageListed :: !Bool
   }
 
 -- | Wrap in IO so that remote content can be downloaded on demand
@@ -49,6 +50,7 @@ instance body ~ Maybe String => FromJSON (Page body) where
     pageHead <- (fmap (preEscapedToHtml :: Text -> Html) <$> (o .:? "head")) .!= ""
     pageSkipH1 <- o .:? "skip-h1" .!= False
     pageBody <- o .:? "url"
+    pageListed <- o .:? "listed" .!= True
     let pageEditLink = Nothing
     pure Page {..}
 

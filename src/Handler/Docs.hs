@@ -91,7 +91,7 @@ getLearnR = do
             \.
           <p>The following is a list of all library tutorials provided on this site.
           <ll>
-            $forall (name, page) <- mapToList $ docsLibraries docs
+            $forall (name, page) <- filter (pageListed . snd) $ mapToList $ docsLibraries docs
               <dt>
                 <a href=@{LibraryR name}>
                   <b>#{name}
@@ -101,7 +101,7 @@ getLearnR = do
           <h2 #tutorials>Tutorials
           <p>We have the following general tutorials and guides on this site, separate from library-specific documentation.
           <ul>
-            $forall (name, page) <- mapToList $ docsTutorials docs
+            $forall (name, page) <- filter (pageListed . snd) $ mapToList $ docsTutorials docs
               <li>
                 <a href=@{TutorialR name}>#{pageTitle page}
     |]
