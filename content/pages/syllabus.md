@@ -147,10 +147,12 @@ former is a prerequisite for this material.
 Exceptions are built into the Haskell runtime. Proper handling is
 essential.
 
-FIXME: need to consolidate the material below
+[Safe exception handling](/tutorial/exceptions)
+
+That tutorial references two other deeper dives on the topic:
 
 * [Exceptions Best Practices](https://www.fpcomplete.com/blog/2016/11/exceptions-best-practices-haskell)
-    * [Asynchronous Exception Handling in Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell) (deeper dive)
+* [Asynchronous Exception Handling in Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell)
 
 ## Testing
 

@@ -701,3 +701,7 @@ Haskell. As mentioned, the trick is to get a lot of practice using the
 functions above. And if you're interested in getting a much deeper
 intuition, please check out [Async Exception Handling in
 Haskell](https://www.fpcomplete.com/blog/2018/04/async-exception-handling-haskell).
+
+There's also an older blog post that gives some recommendations on [exceptions
+best
+practices](https://www.fpcomplete.com/blog/2016/11/exceptions-best-practices-haskell).
