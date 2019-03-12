@@ -32,7 +32,7 @@ What we won't do here:
 
 ## `UnliftIO.Exception`
 
-Instead of use the `Control.Exception` module, we recommend using the
+Instead of using the `Control.Exception` module, we recommend using the
 `UnliftIO.Exception` module from the `unliftio` package. It provides
 two important advantages over `Control.Exception`:
 
@@ -237,7 +237,7 @@ An asynchronous exception is totally different. It is a demand from
 outside of our control to shut down as soon as possible. If we were to
 catch such an exception and recover from it, we would be breaking the
 expectations of the thread that tried to shut us down. Instead, with
-asynchronous exceptions, we're allowed to clean up, but not
+asynchronous exceptions, exception handling best practices tell us we're allowed to clean up, but not
 recover. For example, the `timeout` function uses asynchronous
 exceptions. What should the expected behavior here be?
 
@@ -248,11 +248,15 @@ exceptions. What should the expected behavior here be?
 {-# LANGUAGE OverloadedStrings #-}
 import RIO
 
+oneSecond, fiveSeconds :: Int
+oneSecond = 1000000
+fiveSeconds = 5000000
+
 main :: IO ()
 main = runSimpleApp $ do
-  res <- timeout 1000000 $ do
+  res <- timeout oneSecond $ do
     logInfo "Inside the timeout"
-    res <- tryAny $ threadDelay 5000000 `finally`
+    res <- tryAny $ threadDelay fiveSeconds `finally`
       logInfo "Inside the finally"
     logInfo $ "Result: " <> displayShow res
   logInfo $ "After timeout: " <> displayShow res
@@ -260,7 +264,7 @@ main = runSimpleApp $ do
 
 Bad async exception handling would allow the "Result: " message to
 print. We don't want that to happen! Instead, we allow the `finally`
-cleanup call to occur an then immediately exit. This ensures that
+cleanup call to occur and then immediately exit. This ensures that
 resource cleanup can happen (ensuring exception safety), while
 disallowing large delays from async exceptions.
 
@@ -329,7 +333,7 @@ analysis, which is what makes all of this magic work. Love it or hate
 it, this is at the core of the exception handling mechanism in
 Haskell.
 
-We can also create hiearchies of exceptions. In my experience, these
+We can also create hierarchies of exceptions. In my experience, these
 aren't actually used that often (outside of async exceptions, which
 we'll get to in a bit).
 
@@ -404,7 +408,7 @@ try :: Exception e => IO a -> IO (Either e a)
 Notice the type variable `e`. `try` will catch whichever type of
 exception you ask it to. But if you're unclear about which exception
 type you care about, the compiler will complain about ambiguous
-types. That's why, in our hiearchical exception above, I turned on
+types. That's why, in our hierarchical exception above, I turned on
 `ScopedTypeVariables` and included signatures like `` `catch` (\(_ ::
 Child1) ->``.
 
@@ -425,14 +429,15 @@ type, `SomeAsyncException`, which is a child of `SomeException`. All
 exceptions which are thrown asynchronously must be a child of that
 exception type. And conversely, asynchronous exceptions must _not_ be
 thrown synchronously. The `UnliftIO.Exception` module has quite a few
-safeguards in place to ensure this happens; please see the "Async
+safeguards in place to ensure both of these conditions are met.
+Please see the "Async
 Exception Handling in Haskell" article above for the gory details.
 
 Upshot of all of this:
 
 * If you define your own exception type for asynchronous exceptions,
   make it a child of `SomeAsyncException`. (Note: this is a pretty
-  unusal thing to do.)
+  unusual thing to do.)
 * If you define your own exception type for synchronous exceptions,
   don't make it a child of `SomeAsyncException`.
 * The functions we'll mention below for cleaning up and recovering are
@@ -476,9 +481,9 @@ throwString :: (MonadIO m, HasCallStack) => String -> m a
 error :: HasCallStack => String -> a
 ```
 
-The difference is that the former throws a synchronous exception,
+The difference is that the former throws a synchronous exception of type `StringException`,
 whereas the latter creates a thunk which, when evaluated, throws a
-synchronous exception. To demonstrate the difference:
+synchronous exception of type `ErrorCall`. To demonstrate the difference:
 
 ```haskell
 throwString "foo" :: IO () -- throws an exception
