@@ -41,7 +41,7 @@ two important advantages over `Control.Exception`:
   library](/library/unliftio) for more information
 * It handles asynchronous exceptions better, as we'll describe below
 
-The `UnliftIO.Exception` module is reexported from both the `UnliftIO`
+The contents of the `UnliftIO.Exception` module are reexported from both the `UnliftIO`
 and `RIO` modules (see [the `rio` library](/library/rio)). For our
 examples, we're simply going to use `RIO`.
 
