@@ -119,7 +119,7 @@ won't rehash that blog post here. I will say that in many commercial
 projects the FP Complete team has worked on, using `RIO` has
 short-circuited long design discussions around monad transformer
 stacks. And conversely, projects we've assisted on which have used
-their own monad transformer or effects approaches have often spend
+their own monad transformer or effects approaches have often spent
 significant time on designing and debugging.
 
 That said: this article isn't designed to convince you of anything,
@@ -736,7 +736,7 @@ console output:
   character encoding, but instead provide consistent output across
   systems.
 
-This concept liekly deserves a deeper explanation in the `rio`
+This concept likely deserves a deeper explanation in the `rio`
 context. The best I can give for now is a link to the [beware of
 `readFile`](https://www.snoyman.com/blog/2016/12/beware-of-readfile)
 blog post, which captures much of the idea.
@@ -1183,7 +1183,7 @@ typeclass-based approach (see example below).
 
 One counterexample would be if you're writing a general purpose
 library that is supposed to support more use cases. That's the case of
-`rio` itself. In that case, bit the bullet and use the more verbose
+`rio` itself. In that case, bite the bullet and use the more verbose
 type signatures.
 
 ### Unlifting RIO
