@@ -113,11 +113,12 @@ footer .text-muted {
 }
 
 .btn-primary {
-  background: #329d94;
+  color: #fff !important;
+  background: #584b7e;
   border: 0;
 }
 .btn-primary:hover {
-  background: #1b96c4;
+  background: #8f4e8b;
   border: 0;
 }
 
