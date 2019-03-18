@@ -42,6 +42,7 @@ h1, h2, h3 {
 
 .fp-nav a {
   margin-right: 20px;
+  white-space: nowrap; /* This prevents multiple-word menu items from being split across two lines e.g. on mobile view. */
 }
 
 .fp-nav-items {
