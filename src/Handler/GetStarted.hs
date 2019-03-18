@@ -193,7 +193,7 @@ downloadContents =
         : A compiler and interpreter for Haskell programs.
       <li>
         <b>Haddock
-        : A dcoumentation generator for Haskell packages.
+        : A documentation generator for Haskell packages.
       <li>
         <b>Stackage
         : A curated repository of thousands of packages installed on demand.
