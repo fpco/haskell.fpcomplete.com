@@ -13,6 +13,11 @@ h1, h2, h3 {
   color: #6e618d
 }
 
+#toplogo {
+    width: 250px;
+    padding-top: 40px;
+}
+
 .fp-callout {
   background: #e0f0f9;
   padding: 10px;
@@ -47,7 +52,6 @@ h1, h2, h3 {
 
 .fp-nav-items {
   text-align: right;
-  height: 140px;
   line-height: 140px;
   margin-top: 5px;
 }
@@ -146,14 +150,17 @@ a:hover {
   .fp-nav-items {
     text-align: left;
     height: auto;
+    margin-top: 0 10px 0 0;
     line-height: 30px;
-    margin: 0
   }
   .fp-nav a {
     margin-right: 5px;
   }
   .fp-logo {
     height: 120px;
+  }
+  #toplogo {
+    padding-top: 15px;
   }
   .fp-body-fluid {
     padding: 0;
@@ -181,7 +188,7 @@ a:hover {
     text-align: left;
     height: auto;
     line-height: 30px;
-    margin: 0
+    margin: 15px 0 0 0
   }
   .fp-logo {
     height: 100px;
@@ -203,11 +210,6 @@ a:hover {
 .fp-logo-link, .fp-logo:hover, .fp-logo *:hover {
   text-decoration: none !important;
   border: none !important;
-}
-
-#toplogo {
-    width: 250px;
-    padding-top: 40px;
 }
 
 #footerlogo {
