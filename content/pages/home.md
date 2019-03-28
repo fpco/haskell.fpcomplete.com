@@ -57,8 +57,8 @@ computing** and **machine learning**.
 
 
 
-<div style="text-align: center; margin-top: 50px">
-<img src="static/img/splash.png" width="60%">
+<div style="text-align: center; margin-top: 20px">
+<img src="static/img/splash.png" style="max-width: 100%; max-height: 30em;">
 </div>
 
 </div>
