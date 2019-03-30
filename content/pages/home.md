@@ -131,7 +131,7 @@ We recommend checking out our _Learn Haskell_ education hub, containing
 links to content we believe is most helpful for those new to Haskell
 to start learning to create commercial Haskell software.
 
-<a class="btn btn-primary">Learn Haskell</a>
+<a href="/learn" class="btn btn-primary">Learn Haskell</a>
 
 </div>
 
@@ -143,7 +143,7 @@ _Applied Haskell_ is our course for someone to move from knowing
 Haskell basics to being able to write commercial software, with enough
 knowledge to pick up any new skills needed on demand.
 
-<a class="btn btn-primary">Applied Haskell</a>
+<a href="/syllabus" class="btn btn-primary">Applied Haskell</a>
 
 </div>
 
@@ -156,9 +156,7 @@ convince yourself? Learn about how we promote Haskell in our page
 targeted at developers looking to get their teams or companies to
 consider adopting Haskell.
 
-Go to the
-[FP Complete’s Haskell Success Program](https://haskell.fpcomplete.com/success)
-for more information.
+Go to [FP Complete’s promotion page](/promote) for more information.
 
 # Succeed With Haskell
 
@@ -170,4 +168,4 @@ FP Complete offers general consulting services, but for many companies
 a smaller engagement is all that’s necessary. That’s why we’ve begun
 offering the Haskell Success Program.
 
-<a class="btn btn-primary">Start Succeeding</a>
+<a href="/success" class="btn btn-primary">Start Succeeding</a>
