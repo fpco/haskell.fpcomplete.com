@@ -37,7 +37,7 @@ challenge.
 ## `rio` quick start
 
 As usual, you'll need to depend on the `rio` library to use it. In a
-typical project, this will mean adding `rio` to your `project.yaml` or
+typical project, this will mean adding `rio` to your `package.yaml` or
 `.cabal` file's dependencies list. If using something like the [Stack
 script interpreter](/tutorial/stack-script), this will happen
 automatically. Next, you'll want to use the `RIO` module as your
@@ -60,7 +60,7 @@ import RIO
 When you need functionality for other data types like `ByteString` and
 `Text`, we recommend importing qualified from the `RIO` version of the
 module using the recommending qualified name. This avoids the need for
-modifying your `project.yaml` file for each new usage, ensures that
+modifying your `package.yaml` file for each new usage, ensures that
 only safe functions are imported by default, and ensures consistency
 across `rio`-using projects. For example:
 
