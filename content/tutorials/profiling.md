@@ -86,7 +86,7 @@ $ stack exec -- hp2ps -e8in -c Main.hp
 $ open Main.ps
 ```
 
-![](http://i.imgur.com/G8SsJxv.png)
+<img src="https://i.imgur.com/G8SsJxv.png" width="100%"/>
 
 * Linear increase in memory used by lists and `Int`s
 * Then it starts going down
