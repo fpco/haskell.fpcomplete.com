@@ -44,21 +44,15 @@ more detail during the course, you should also read [all about
 strictness](/tutorial/all-about-strictness), as experience has shown
 this to be a topic that trips people up often.
 
-As a self test, we recommend ensuring you're able to do the following:
+As a self test, we recommend you to go through [this Functor,
+Applicative and Monad
+tutorial](https://www.snoyman.com/blog/2017/01/functors-applicatives-and-monads)
+and solve the exercises in it.
 
-* Define `fmap` in terms of `>>=` and `return`
-* Define `fmap` in terms of `<*>` and `pure`
-* Define `>>=` in terms of `Applicative` instance and `join`
-* Define `join` in terms of `>>=`
-* Explain the intuition behind: what can you do with `Monad` and not `Applicative`?
-
-If you're looking to read up on this, our recommendations are:
-
-* [Haskell Programming from First Principles](http://haskellbook.com/)
-  for a thorough coverage of all relevant topics
-* For a quick crash course on `Functor`/`Applicative`/`Monad`, see
-  [Michael's blog
-  post](https://www.snoyman.com/blog/2017/01/functors-applicatives-and-monads)
+If you're looking to read up and learn Haskell from scratch, our
+recommendation is [Haskell Programming from First
+Principles](http://haskellbook.com/) for a thorough coverage of all
+relevant topics.
 
 Let the course material begin!
 
