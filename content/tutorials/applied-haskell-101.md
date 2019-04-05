@@ -41,7 +41,7 @@ of value with a subset of its features. We're going to focus on those
 features and the tools and libraries necessary to take advantage of
 them. We'll also be covering Haskell idioms and patterns so you can
 pick up common code more quickly, and discuss some runtime system
-idiosyncracies.
+idiosyncrasies.
 
 You should know the basics of Haskell to follow along properly. You do
 not need to know advanced language theory, category theory, or any
@@ -80,7 +80,7 @@ $ stack setup ghc-8.4.4
 Typically you won't have to do this explicitly. When Stack notices
 you're missing a GHC version, it will install it for you.
 
-GHC can both compile code and run it interpretted, as well as provide
+GHC can both compile code and run it interpreted, as well as provide
 you with an interactive REPL. You can do those directly with,
 respectively, the `ghc`, `runghc`, and `ghci` executables. Stack does
 not place these executables on the user PATH, so if you'd like to run
@@ -201,7 +201,7 @@ Haskell program. Two commonly used tools are:
 * [stylish-haskell](https://www.stackage.org/package/stylish-haskell),
   which cleans up things like import statements
 * [hindent](https://www.stackage.org/package/hindent), which does a
-  more traditional code formating.
+  more traditional code formatting.
 
 ### Editor integration/IDEs
 
