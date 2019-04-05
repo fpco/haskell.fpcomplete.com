@@ -2,7 +2,7 @@
 title: Applied Haskell Syllabus
 ---
 
-Applied Haskell is a commercial training programme focusing on
+Applied Haskell is a commercial training program focusing on
 teaching _intermediate Haskell_. The goal is to help someone move from
 knowing Haskell basics to being able to write commercial software,
 with enough knowledge to pick up any new skills needed on demand.
