@@ -65,7 +65,7 @@ computing** and **machine learning**.
 
 </div>
 
-# Why We Love Haskell
+## Why We Love Haskell
 
 <div class="row">
 
@@ -115,7 +115,7 @@ Learn more on our [promote Haskell](/promote) page.
 </div>
 
 
-# Improve Your Haskell
+## Improve Your Haskell
 
 This site contains tutorials, library documentation, best practices,
 and recommendations on how to adopt Haskell at your company. Our
@@ -125,7 +125,7 @@ recommendations are drawn from experience at FP Complete.
 
 <div class="col-md-6">
 
-## Beginners
+### Beginners
 
 We recommend checking out our _Learn Haskell_ education hub, containing
 links to content we believe is most helpful for those new to Haskell
@@ -137,7 +137,7 @@ to start learning to create commercial Haskell software.
 
 <div class="col-md-6">
 
-## Intermediates
+### Intermediates
 
 _Applied Haskell_ is our course for someone to move from knowing
 Haskell basics to being able to write commercial software, with enough
@@ -149,7 +149,7 @@ knowledge to pick up any new skills needed on demand.
 
 </div>
 
-# Promote Haskell
+## Promote Haskell
 
 Want some help convincing your company to try Haskell? Want to
 convince yourself? Learn about how we promote Haskell in our page
@@ -158,7 +158,7 @@ consider adopting Haskell.
 
 Go to [FP Complete’s promotion page](/promote) for more information.
 
-# Succeed With Haskell
+## Succeed With Haskell
 
 FP Complete’s corporate mission is to increase the corporate adoption
 of Haskell. One of the primary challenges we’ve heard from corporate
