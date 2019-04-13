@@ -357,7 +357,7 @@ There are three related variable types in `stm`:
   and read them at the other end.
 * `TQueue` is just like a `TChan`, but it doesn't support a concept
   known as _broadcast_, with multiple readers for a single writer. In
-  exchange, `TQueue`s are faster. Takeaway: unless you specific need
+  exchange, `TQueue`s are faster. Takeaway: unless you specifically need
   broadcast (which in my experience is a rare occurrence), prefer
   queues.
 * `TBQueue` is like a `TQueue`, but is also bounded. If more than the
@@ -366,7 +366,7 @@ There are three related variable types in `stm`:
 
 In addition to these types, the `stm-chans` library provides a number
 of additional channel and queue types, including variants which can be
-closed. Let's use one of these to explore the basic API and bit, and
+closed. Let's use one of these to explore the basic APIs a bit, and
 implement a concurrent URL downloader in the process.
 
 __NOTE__ This example takes advantage of the wonderful
@@ -417,6 +417,18 @@ drainQueue queue =
           res <- httpLBS req
           BL.writeFile file $ getResponseBody res
 ```
+
+And this should be executed like this:
+
+```
+$ stack program.hs
+http://www.google.com google.txt
+http://www.snoyman.com snoyman.txt
+^Ctrl-D
+```
+
+You will find the content of the above website in the respective
+files.
 
 ## Exceptions
 
