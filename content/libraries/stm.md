@@ -366,7 +366,7 @@ There are three related variable types in `stm`:
 
 In addition to these types, the `stm-chans` library provides a number
 of additional channel and queue types, including variants which can be
-closed. Let's use one of these to explore the basic API's a bit, and
+closed. Let's use one of these to explore the basic APIs a bit, and
 implement a concurrent URL downloader in the process.
 
 __NOTE__ This example takes advantage of the wonderful
