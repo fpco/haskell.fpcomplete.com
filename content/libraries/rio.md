@@ -59,7 +59,7 @@ import RIO
 
 When you need functionality for other data types like `ByteString` and
 `Text`, we recommend importing qualified from the `RIO` version of the
-module using the recommending qualified name. This avoids the need for
+module using the recommended qualified name. This avoids the need for
 modifying your `package.yaml` file for each new usage, ensures that
 only safe functions are imported by default, and ensures consistency
 across `rio`-using projects. For example:
