@@ -208,23 +208,17 @@ uvectorReverse = VU.toList . vectorReverseGeneric
 
 Awesome, but are they working as advertised ? Let's find out!
 
-Add the relevant import to `ReverseSpec.hs`:
-
-```
-import qualified Data.List as L
-```
-
-and then add few properties which compares the result with the
-implemention of `Data.List module`:
+Add few properties which compares the result with the implemention of
+`reverse` function in the standard libray:
 
 ```
 describe "compare with Data.List reverse" $ do
   prop "vectorReverse" $ \list ->
-    vectorReverse list `shouldBe` (L.reverse (list :: [Int]))
+    vectorReverse list `shouldBe` (reverse (list :: [Int]))
   prop "svectorReverse" $ \list ->
-    svectorReverse list `shouldBe` (L.reverse (list :: [Int]))
+    svectorReverse list `shouldBe` (reverse (list :: [Int]))
   prop "uvectorReverse" $ \list ->
-    uvectorReverse list `shouldBe` (L.reverse (list :: [Int]))
+    uvectorReverse list `shouldBe` (reverse (list :: [Int]))
 ```
 
 And yeah, all the tests passes fine!
