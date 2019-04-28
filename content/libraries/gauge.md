@@ -1,5 +1,5 @@
 ---
-title: Benchmarking with guage
+title: Benchmarking with gauge
 ---
 
 gauge is a library for doing performance measurement and analysis. It
