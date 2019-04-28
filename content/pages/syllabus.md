@@ -182,6 +182,7 @@ Deeper understanding of Haskell performance, and how to improve it.
 
 * [Primitive Haskell](/tutorial/primitive-haskell)
 * [Profiling](/tutorial/profiling)
+* [Benchmarking with gauge](/library/gauge)
 * [Evaluation order and state tokens](https://wiki.haskell.org/Evaluation_order_and_state_tokens)
 
 ## Streaming data
