@@ -93,7 +93,8 @@ Note that the comment on line 2 above is necessary!
 We'll start off with a high level overview of the content we're going
 to cover, our approach to Haskell, and tooling to be aware of.
 
-[Applied Haskell 101](/tutorial/applied-haskell-101)
+* [Applied Haskell 101](/tutorial/applied-haskell-101)
+* [Applicative syntax](/tutorial/applicative-syntax)
 
 ## The RIO approach
 
