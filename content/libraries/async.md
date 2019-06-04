@@ -843,7 +843,7 @@ sumConcurrently f list = do
   atomically $ readTVar totalVar
 ```
 
-Final set of exercises: implement the `replicateConcurrently_` function using:
+Another set of exercises: implement the `replicateConcurrently_` function using:
 
 * `mapConcurrently_`
 * The `Concurrently` newtype wrapper
@@ -935,3 +935,5 @@ main = hspec $ do
     rc 10 $ atomically $ modifyTVar' resVar (+ 1)
     atomically (readTVar resVar) `shouldReturn` 10
 ```
+
+Final exercise: implement `mapConcurrently` using `mapConcurrently_`.
