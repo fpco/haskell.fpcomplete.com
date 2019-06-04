@@ -2,9 +2,6 @@
 title: Asynchronous and Concurrent Programming
 ---
 
-__FIXME__ This module needs to be updated to discuss the
-`UnliftIO.Async` module instead of `async` itself.
-
 The [async package](https://www.stackage.org/package/async) provides
 functionality for performing actions asynchronously, across multiple threads.
 While it's built on top of the `forkIO` function from base (in
@@ -732,42 +729,209 @@ arbitrary, and there are three valid options to consider:
 Using `UnliftIO.Async` as a drop in replacement for
 `Control.Concurrent.Async` is straightforward, the only API change to
 be aware of is that the `Async` data type will take an extra type
-paramter for the underlying monad.
+paramter for the underlying monad. This API is also exported directly
+from the `RIO` module, so if you're using `rio`, you're all set!
 
-## Section exercise
+## Section exercises
 
-Write a helper function which allows you to pass actions to worker
-threads, and which properly handles exceptions for all of these
-actions. You'll want to use closable queues from `stm-chans`. Imagine
-how you'd allow parallelizing a loop that looks like:
-
-```haskell
-myLoop = do
-  mnext <- getNextItem
-  case mnext of
-    Nothing -> pure ()
-    Just next -> do
-      handleItem next -- want to do this in a worker
-      myLoop
-```
-
-If you just use `async` or `forkIO`:
-
-* You'll get unbounded worker threads created
-* You'll incur the overhead of forking for each item
-* You won't have any handling of exceptions
-
-Hint: consider a helper function like:
+Modify the program below so that it completes in under 10 seconds,
+without modifying `expensiveComputation`:
 
 ```haskell
-type PerformInWorker = ... -- what should this type be?
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+import Test.Hspec
+import Control.Monad (replicateM)
 
-withWorkers
-  :: Int -- ^ worker count
-  -> (PerformInWorker -> IO a)
-  -> IO a
+data App = App
+  { appCounter :: !(TVar Int)
+  }
+
+expensiveComputation :: RIO App Int
+expensiveComputation = do
+  app <- ask
+  -- I'm not actually an expensive computation, but I play one on TV
+  delayVar <- registerDelay 1000000
+  atomically $ do
+    readTVar delayVar >>= checkSTM
+    let var = appCounter app
+    modifyTVar' var (+ 1)
+    readTVar var
+
+main :: IO ()
+main = hspec $ it "works" $ do
+  app <- App <$> newTVarIO 0
+  res <- runRIO app $ replicateM 10 expensiveComputation
+  sum res `shouldBe` sum [1..10]
 ```
 
-Bonus:
+__QUESTION__ Why is the `sum` necessary to get the tests to pass?
 
-* Generalize to `MonadUnliftIO`
+Next, modify the following similar program so that the test passes in
+under 10 seconds, by only changing the line specified:
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+import Test.Hspec
+import Control.Monad (replicateM)
+
+expensiveComputation :: MonadIO m => Int -> m Int
+expensiveComputation input = do
+  threadDelay 1000000
+  pure input
+
+main :: IO ()
+main = hspec $ it "works" $ do
+  -- Modify only the following line
+  res <- for [1..10] expensiveComputation
+
+  -- Don't change this, it's cheating! :)
+  res `shouldBe` [1..10]
+```
+
+__QUESTION__ Why is `sum` not necessary in this code?
+
+Next, implement the `sumConcurrently` function below.
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+import RIO
+import Test.Hspec
+import Control.Monad (replicateM)
+
+expensiveComputation :: MonadIO m => Int -> m Int
+expensiveComputation input = do
+  threadDelay 1000000
+  pure input
+
+sumConcurrently
+  :: (a -> IO Int)
+  -> [a]
+  -> IO Int
+sumConcurrently f list = _
+
+main :: IO ()
+main = hspec $ it "works" $ do
+  res <- sumConcurrently expensiveComputation [1..10]
+  res `shouldBe` sum [1..10]
+```
+
+__SOLUTION__ There are a few ways of implementing
+`sumConcurrently`. However, one way that avoids unnecessary lists by
+leveraging commutativity of addition is:
+
+```haskell
+sumConcurrently
+  :: (a -> IO Int)
+  -> [a]
+  -> IO Int
+sumConcurrently f list = do
+  totalVar <- newTVarIO 0
+  forConcurrently_ list $ \a -> do
+    int <- f a
+    atomically $ modifyTVar' totalVar (+ int)
+  atomically $ readTVar totalVar
+```
+
+Final set of exercises: implement the `replicateConcurrently_` function using:
+
+* `mapConcurrently_`
+* The `Concurrently` newtype wrapper
+* `concurrently_`
+* `withAsync`
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+import RIO
+import Test.Hspec
+
+-- Use mapConcurrently_ here
+rc1 :: Int -> IO () -> IO ()
+rc1 = undefined
+
+-- Use the Concurrently newtype here
+rc2 :: Int -> IO () -> IO ()
+rc2 = undefined
+
+-- Use concurrently_ here
+rc3 :: Int -> IO () -> IO ()
+rc3 = undefined
+
+-- Use withAsync here
+rc4 :: Int -> IO () -> IO ()
+rc4 = undefined
+
+main :: IO ()
+main = hspec $ do
+  let rcs =
+        [ ("replicateConcurrently_", replicateConcurrently_)
+        , ("using mapConcurrently_", rc1)
+        , ("using Concurrently (the newtype)", rc2)
+        , ("using concurrently_ (the function)", rc3)
+        , ("using withAsync", rc4)
+        ]
+  for_ rcs $ \(name, rc) -> it name $ do
+    resVar <- newTVarIO 0
+    rc 10 $ atomically $ modifyTVar' resVar (+ 1)
+    atomically (readTVar resVar) `shouldReturn` 10
+```
+
+__SOLUTION__
+
+```haskell
+#!/usr/bin/env stack
+-- stack --resolver lts-12.21 script
+{-# LANGUAGE NoImplicitPrelude #-}
+import RIO
+import Test.Hspec
+
+-- Use mapConcurrently_ here
+rc1 :: Int -> IO () -> IO ()
+rc1 count action = mapConcurrently_ (const action) [1..count]
+
+-- Use the Concurrently newtype here
+rc2 :: Int -> IO () -> IO ()
+rc2 count action = runConcurrently $ sequenceA_ $ replicate count (Concurrently action)
+
+-- Use concurrently_ here
+rc3 :: Int -> IO () -> IO ()
+rc3 count0 action =
+    let loop 1 = action
+        loop count = concurrently_ action $ loop $ count - 1
+     in loop count0
+
+-- Use withAsync here
+rc4 :: Int -> IO () -> IO ()
+rc4 count0 action =
+    let loop 1 = action
+        loop count = withAsync action $ \thread -> do
+          loop $ count - 1
+          wait thread
+     in loop count0
+
+main :: IO ()
+main = hspec $ do
+  let rcs =
+        [ ("replicateConcurrently_", replicateConcurrently_)
+        , ("using mapConcurrently_", rc1)
+        , ("using Concurrently (the newtype)", rc2)
+        , ("using concurrently_ (the function)", rc3)
+        , ("using withAsync", rc4)
+        ]
+  for_ rcs $ \(name, rc) -> it name $ do
+    resVar <- newTVarIO 0
+    rc 10 $ atomically $ modifyTVar' resVar (+ 1)
+    atomically (readTVar resVar) `shouldReturn` 10
+```
