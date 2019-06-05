@@ -21,7 +21,7 @@ with convenient `FromJSON` and `ToJSON` instances for the standard data types
 (numbers, booleans, lists, tuples, dates, and so on).
 
 Let's try these instances out in GHCi. You'll need to import `Data.Aeson`,
-`Data.Map` and `Data.Time.Clock` in order to try out the examples above. You'll
+`Data.Map`, `Data.Text` and `Data.Time.Clock` in order to try out the examples above. You'll
 also need to launch GHCi with `ghci -XOverloadedStrings`.
 
     λ> decode "true" :: Maybe Bool
