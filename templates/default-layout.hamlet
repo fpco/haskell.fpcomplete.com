@@ -26,12 +26,13 @@ $doctype 5
     <div class="container-fluid fp-nav">
       <div class="container">
         <div class="row">
-          <div class="col col-4">
-            <a href="/" class="fp-logo-link">
+          <div class="col col-3">
+            <a href="https://www.fpcomplete.com/" class="fp-logo-link">
               <img #toplogo src=@{StaticR img_fplogo_svg}>
 
-          <div class="col-8">
+          <div class="col-9">
             <nav class="fp-nav-items">
+              <a class="p-2 text-light" href="/">Overview</a>
               <a class="p-2 text-light" href="/get-started">Get Started</a>
               <a class="p-2 text-light" href="/learn">Learn</a>
               <a class="p-2 text-light" href="/promote">Promote</a>
