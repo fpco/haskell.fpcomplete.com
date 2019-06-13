@@ -106,6 +106,7 @@ tests:
     - microlens-platform
     - foldl
     - wai-conduit
+    - unliftio
 
 # Define flags used by "yesod devel" to make compilation faster
 flags:
