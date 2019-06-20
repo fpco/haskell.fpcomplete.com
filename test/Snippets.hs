@@ -92,7 +92,7 @@ run = do
           then logDebug $ "Snippet already compiled: " <> fromString fp
           else do
             logInfo $ "Testing snippet: " <> fromString fp
-            proc "ghc" [fp, "-fdefer-typed-holes"] (void . readProcess_)
+            proc "stack" ["exec", "--", "ghc", "-fdefer-typed-holes", fp] (void . readProcess_)
               `catchAny` \e ->
               error $ "Error with snippet from " ++ show src ++ ": " ++ show e
       | otherwise -> do
