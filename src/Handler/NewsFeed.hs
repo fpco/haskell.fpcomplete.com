@@ -70,18 +70,19 @@ feed ds =
 makeEntries :: LoadedFeedDocs -> [FeedEntry (Route App)]
 makeEntries LoadedFeedDocs {..} =
   sortOn (Down . feedEntryUpdated) $
-  let makePageEntriesWithRoute rf = map (uncurry makePageEntry . first rf) . M.toList
+  let makePageEntriesWithRoute rf = mapMaybe (uncurry makePageEntry . first rf) . M.toList
    in concat
         [ makePageEntriesWithRoute LibraryR ldocsLibraries
         , makePageEntriesWithRoute TutorialR ldocsTutorials
         ]
 
-makePageEntry :: Route App -> Page Html -> FeedEntry (Route App)
+makePageEntry :: Route App -> Page Html -> Maybe (FeedEntry (Route App))
 makePageEntry r Page {..} =
-  FeedEntry
-    { feedEntryLink = r
-    , feedEntryUpdated = UTCTime pageLastUpdated 0
-    , feedEntryTitle = LT.toStrict $ Text.renderHtml pageTitle
-    , feedEntryContent = pageBody
-    , feedEntryEnclosure = Nothing
-    }
+  flip fmap pageLastUpdated $ \lu ->
+    FeedEntry
+      { feedEntryLink = r
+      , feedEntryUpdated = UTCTime lu 0
+      , feedEntryTitle = LT.toStrict $ Text.renderHtml pageTitle
+      , feedEntryContent = pageBody
+      , feedEntryEnclosure = Nothing
+      }

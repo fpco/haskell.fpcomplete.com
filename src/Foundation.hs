@@ -39,6 +39,7 @@ instance Yesod App where
         render <- getUrlRenderParams
         displayPage Page
               { pageTitle = Y.pageTitle pc
+              , pageLastUpdated = Nothing
               , pageDescription = Nothing
               , pageAuthor = Nothing
               , pageHead = Y.pageHead pc render
