@@ -80,7 +80,7 @@ makePageEntry :: Route App -> Page Html -> FeedEntry (Route App)
 makePageEntry r Page {..} =
   FeedEntry
     { feedEntryLink = r
-    , feedEntryUpdated = undefined
+    , feedEntryUpdated = UTCTime pageLastUpdated 0
     , feedEntryTitle = LT.toStrict $ Text.renderHtml pageTitle
     , feedEntryContent = pageBody
     , feedEntryEnclosure = Nothing
