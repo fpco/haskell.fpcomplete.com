@@ -14,7 +14,6 @@ import Import
 import Yesod.AtomFeed
 import Yesod.RssFeed
 
-import Data.List as List (maximum)
 import qualified Data.Text.Lazy as LT
 import Text.Blaze.Html.Renderer.Text as Text
 
@@ -29,8 +28,9 @@ getAtomR = feedHelper atomFeed
 feedHelper :: (Feed (Route App) -> Handler a) -> Handler a
 feedHelper func = do
   docs <- getDocs
+  now <- liftIO getCurrentTime
   tups <- liftIO $ loadAllDocsPure docs
-  func $ feed tups
+  func $ feed now tups
 
 data LoadedFeedDocs =
   LoadedFeedDocs
@@ -51,8 +51,8 @@ loadAllDocsPure Docs {..} = do
       body <- pageBody
       pure $ p {pageBody = body}
 
-feed :: LoadedFeedDocs -> Feed (Route App)
-feed ds =
+feed :: UTCTime -> LoadedFeedDocs -> Feed (Route App)
+feed now ds =
   let entries = makeEntries ds
    in Feed
         { feedTitle = "FP Complete  Haskell"
@@ -62,7 +62,7 @@ feed ds =
         , feedDescription =
             "FP Complete is the leading provider of commercial Haskell tools and services"
         , feedLanguage = "en-us"
-        , feedUpdated = List.maximum $ map feedEntryUpdated entries
+        , feedUpdated = maximum $ ncons now $ map feedEntryUpdated entries
         , feedLogo = Just (StaticR img_fplogo_svg, "FP Complete Logo")
         , feedEntries = entries
         }
