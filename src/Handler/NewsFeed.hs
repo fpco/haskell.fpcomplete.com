@@ -6,31 +6,22 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Handler.NewsFeed
-  ( getRssR
-  , getAtomR
+  ( getFeedR
   ) where
 
 import Import
-import Yesod.AtomFeed
-import Yesod.RssFeed
 
 import qualified Data.Text.Lazy as LT
 import Text.Blaze.Html.Renderer.Text as Text
 
 import qualified Data.Map as M
 
-getRssR :: Handler RepRss
-getRssR = feedHelper rssFeed
-
-getAtomR :: Handler RepAtom
-getAtomR = feedHelper atomFeed
-
-feedHelper :: (Feed (Route App) -> Handler a) -> Handler a
-feedHelper func = do
+getFeedR :: Handler TypedContent
+getFeedR = do
   docs <- getDocs
   now <- liftIO getCurrentTime
-  tups <- liftIO $ loadAllDocsPure docs
-  func $ feed now tups
+  tups <- liftIO $ loadAllDocs docs
+  newsFeed $ feed now tups
 
 data LoadedFeedDocs =
   LoadedFeedDocs
@@ -38,8 +29,8 @@ data LoadedFeedDocs =
     , ldocsTutorials :: !(Map Text (Page Html))
     }
 
-loadAllDocsPure :: Docs -> IO LoadedFeedDocs
-loadAllDocsPure Docs {..} = do
+loadAllDocs :: Docs -> IO LoadedFeedDocs
+loadAllDocs Docs {..} = do
   ldocsLibraries <- loadMap docsLibraries
   ldocsTutorials <- loadMap docsTutorials
   pure LoadedFeedDocs {..}
@@ -56,7 +47,7 @@ feed now ds =
   let entries = makeEntries ds
    in Feed
         { feedTitle = "FP Complete  Haskell"
-        , feedLinkSelf = RssR
+        , feedLinkSelf = FeedR
         , feedLinkHome = HomeR
         , feedAuthor = "Tom Sydney Kerckhove <syd@fpcomplete.com"
         , feedDescription =
@@ -78,7 +69,7 @@ makeEntries LoadedFeedDocs {..} =
 
 makePageEntry :: Route App -> Page Html -> Maybe (FeedEntry (Route App))
 makePageEntry r Page {..} =
-  flip fmap pageLastUpdated $ \lu ->
+  flip fmap pagePublished $ \lu ->
     FeedEntry
       { feedEntryLink = r
       , feedEntryUpdated = UTCTime lu 0
