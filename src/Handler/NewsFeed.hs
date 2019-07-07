@@ -49,7 +49,7 @@ feed now ds =
         { feedTitle = "FP Complete  Haskell"
         , feedLinkSelf = FeedR
         , feedLinkHome = HomeR
-        , feedAuthor = "Tom Sydney Kerckhove <syd@fpcomplete.com"
+        , feedAuthor = "FP Complete"
         , feedDescription =
             "FP Complete is the leading provider of commercial Haskell tools and services"
         , feedLanguage = "en-us"
@@ -72,7 +72,7 @@ makePageEntry r Page {..} =
   flip fmap pagePublished $ \lu ->
     FeedEntry
       { feedEntryLink = r
-      , feedEntryUpdated = UTCTime lu 0
+      , feedEntryUpdated = lu
       , feedEntryTitle = LT.toStrict $ Text.renderHtml pageTitle
       , feedEntryContent = pageBody
       , feedEntryEnclosure = Nothing

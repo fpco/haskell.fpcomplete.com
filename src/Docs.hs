@@ -29,7 +29,7 @@ import qualified Data.Text as T
 
 data Page body = Page
   { pageTitle :: !Html
-  , pagePublished :: Maybe Day
+  , pagePublished :: Maybe UTCTime
   , pageDescription :: !(Maybe Text)
   , pageAuthor :: !(Maybe Text)
   , pageHead :: !Html
