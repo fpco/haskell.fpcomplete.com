@@ -46,6 +46,7 @@ dependencies:
 - cmark-gfm
 - filepath
 - yesod-gitrev
+- yesod-newsfeed
 - yesod-sitemap
 - auto-update
 - html-conduit

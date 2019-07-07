@@ -29,6 +29,7 @@ import qualified Data.Text as T
 
 data Page body = Page
   { pageTitle :: !Html
+  , pagePublished :: Maybe UTCTime
   , pageDescription :: !(Maybe Text)
   , pageAuthor :: !(Maybe Text)
   , pageHead :: !Html
@@ -45,6 +46,7 @@ type PageHtml = Page (IO Html)
 instance body ~ Maybe String => FromJSON (Page body) where
   parseJSON = withObject "Page" $ \o -> do
     pageTitle <- (toHtml :: Text -> Html) <$> (o .: "title")
+    pagePublished <- o .:? "published"
     pageDescription <- o .:? "description"
     pageAuthor <- o .:? "author"
     pageHead <- (fmap (preEscapedToHtml :: Text -> Html) <$> (o .:? "head")) .!= ""

@@ -25,3 +25,4 @@
 
 /build-version BuildVersionR GitRev appGitRev
 /sitemap SitemapR GET
+/feed FeedR GET

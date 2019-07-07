@@ -13,6 +13,7 @@ import Import.NoFoundation
 import Text.Hamlet                 (hamletFile)
 import Yesod.Core.Types            (Logger)
 import qualified ClassyPrelude.Yesod as Y
+import Yesod.AtomFeed
 import Yesod.GitRev
 
 data App = App
@@ -35,10 +36,13 @@ instance Yesod App where
 
     defaultLayout :: Widget -> Handler Html
     defaultLayout widget = do
-        pc <- widgetToPageContent widget
+        pc <- widgetToPageContent $ do
+            atomLink FeedR "FP Complete Haskell: Feed"
+            widget
         render <- getUrlRenderParams
         displayPage Page
               { pageTitle = Y.pageTitle pc
+              , pagePublished = Nothing
               , pageDescription = Nothing
               , pageAuthor = Nothing
               , pageHead = Y.pageHead pc render
