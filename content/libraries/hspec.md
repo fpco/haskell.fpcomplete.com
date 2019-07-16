@@ -62,12 +62,13 @@ It fails, of course:
 
 ```
 Failures:
-  test/ReverseSpec.hs:10:
+  src/Reverse.hs:10:13: 
   1) Reverse.myReverse handles empty lists
-       uncaught exception: ErrorCall (Prelude.undefined
+       uncaught exception: ErrorCall
+       Prelude.undefined
        CallStack (from HasCallStack):
-         error, called at libraries/base/GHC/Err.hs:79:14 in base:GHC.Err
-         undefined, called at src/Reverse.hs:9:13 in mylib-0.1.0.0-JvPVOgHHcOeAAaDSh8A4PO:Reverse)
+         error, called at libraries/base/GHC/Err.hs:78:14 in base:GHC.Err
+         undefined, called at src/Reverse.hs:10:13 in mylib-0.1.0.0-FCBjIqB4mhCEtNQa5Mn13e:Reverse
 ```
 
 Fix it...
@@ -112,6 +113,7 @@ describe "betterReverse" $ do
     betterReverse list `shouldBe` myReverse (list :: [Int])
 ```
 
+__Notice__ Remember to export the `betterReverse` function at top of the code file.
 __Exercise__ Why is `myReverse` slow, and how can you make it faster?
 
 Real buggy code I wrote by mistake...
@@ -128,12 +130,12 @@ betterReverse =
 Test suite catches me!
 
 ```
-  test/ReverseSpec.hs:16:
+  test/ReverseSpec.hs:16:7: 
   1) Reverse.betterReverse behaves the same as myReverse
-       Falsifiable (after 2 tests and 2 shrinks):
+       Falsifiable (after 4 tests and 3 shrinks):
+         [0]
        expected: [0]
         but got: []
-       [0]
 ```
 
 OK, let's fix the code:
@@ -150,6 +152,14 @@ betterReverse =
 Hurrah!
 
 ## Let's play with vector
+
+First let's add a `vector` dependency to `package.yaml`:
+
+```yaml
+- vector >= 0.12.0.3
+```
+
+New `Reverse.hs` will now look like that:
 
 ```haskell
 {-# LANGUAGE NoImplicitPrelude #-}
