@@ -11,11 +11,11 @@ popular testing framework for Haskell.
 ## Get started
 
 ```
-$ stack new mylib rio --resolver lts-12.21
+$ stack new mylib rio --resolver lts-13.28
 $ cd mylib
 $ stack test
 ...
-mylib-0.1.0.0: Test suite mylib-test passed
+mylib> Test suite mylib-test passed
 ```
 
 Woohoo, let's kick this off
