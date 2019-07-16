@@ -114,6 +114,7 @@ describe "betterReverse" $ do
 ```
 
 __Notice__ Remember to export the `betterReverse` function at top of the code file.
+
 __Exercise__ Why is `myReverse` slow, and how can you make it faster?
 
 Real buggy code I wrote by mistake...
