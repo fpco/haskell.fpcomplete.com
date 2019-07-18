@@ -29,7 +29,7 @@ ecosystem.
 We contribute regularly to upstream Haskell projects and have founded
 and maintain our own tools and services, including but not limited to:
 
-* [Stack](https://haskellstack.com): The most popular
+* [Stack](https://haskellstack.org): The most popular
   Haskell build tool written for industrial users and maintained by
   us.
 

@@ -32,7 +32,7 @@ source Haskell authors. As a company, we have spearheaded initiatives
 our research indicated would allow more companies to adopt Haskell,
 such as:
 
-* [The Stack build tool](https://haskellstack.com)
+* [The Stack build tool](https://haskellstack.org)
 * [Stackage](https://www.stackage.org)
 * [The RIO standard library](https://github.com/commercialhaskell/rio)
 * [The School of Haskell](https://www.schoolofhaskell.com/)
