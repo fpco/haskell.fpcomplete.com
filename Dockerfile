@@ -15,10 +15,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 COPY build/hfp /opt/app/hfp
-COPY static /opt/app/static
-COPY config /opt/app/config
-COPY content /opt/app/content
-
 
 WORKDIR /opt/app
 
