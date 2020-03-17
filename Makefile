@@ -30,10 +30,7 @@ build-docker-image: require-CI_REGISTRY_IMAGE require-CI_PIPELINE_ID
 ## Deploy using helm
 deploy: require-CI_ENVIRONMENT_NAME require-CI_PIPELINE_ID
 	@echo "Deploying build pipeline: ${CI_PIPELINE_ID}"
-	@helm upgrade \
-		--install ${PROJECT_NAME} chart \
-		-f chart/values/${CI_ENVIRONMENT_NAME}.yaml \
-		--set image.tag="pipeline-${CI_PIPELINE_ID}"
+	@kubectl set image deployment/hfp-prod hfp="${CI_REGISTRY_IMAGE}:pipeline-${CI_PIPELINE_ID}"
 
 ## Show help screen.
 help:
